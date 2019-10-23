@@ -191,6 +191,7 @@
     </div>
 
     <div class="layui-footer" style="text-align: center;font-size: 0.3em;color:#B5B5B5">
+        <input type="hidden" id="urlPath" value="first">
         为了获得最佳操作体验，建议您使用最新版本的浏览器，支持1024 X 768以上分辨率
     </div>
 
@@ -205,6 +206,7 @@
     //JavaScript代码区域
     var tabWindowHeight=0;
     var element,carousel,form,table,laypage,layer,upload;
+
     layui.use(['carousel', 'form','element','table','laypage','upload'], function(){
             element = layui.element,
             carousel = layui.carousel
@@ -261,6 +263,9 @@
             }
             ,btn2: function(index, layero){
                 //按钮【按钮二】的回调
+                $.post("article/removeImg",{url:$('#urlPath').val()},function(res){
+                    console.log(res);
+                });
                 //return false 开启该代码可禁止点击该按钮关闭
             }
             ,cancel: function(){
@@ -276,6 +281,9 @@
             ,accept:'images'
             ,acceptMime: 'image/*'
             ,field:'photos'
+            ,data:{url: function(){
+                    return $('#urlPath').val();
+                }}
             ,before: function(obj){
                 //预读本地文件示例，不支持ie8
                 obj.preview(function(index, file, result){
@@ -284,7 +292,7 @@
             }
             ,done: function(res){
                 //上传完毕
-                console.log(res);
+                $("#urlPath").val(res.urlsPath);
             }
         });
     }
