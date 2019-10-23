@@ -2,6 +2,8 @@ package com.jtfu.config;
 
 
 import org.springframework.context.annotation.*;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
@@ -32,6 +34,16 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebMvcConfigur
         registry.enableContentNegotiation(new MappingJackson2JsonView());
         registry.freeMarker().cache(false);
     }
+
+    @Bean
+    public CommonsMultipartResolver multipartResolver(){
+        CommonsMultipartResolver resolver=new CommonsMultipartResolver();
+        resolver.setDefaultEncoding("utf-8");
+        resolver.setMaxUploadSize(10485760000l);
+        resolver.setMaxInMemorySize(40960);
+        return resolver;
+    }
+
 
     @Bean
     public FreeMarkerConfigurer freeMarkerConfigurer() {
