@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="static/dist/css/layui.css">
+    <style>
+        html{
+            width: 100%;
+            height: 100%;
+        }
+        body{
+            background-color: #F7F8F5;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        .layui-layout-admin .layui-header{
+            height: 80px;
+
+        }
+        .layui-layout-admin .layui-body{
+            top: 80px;
+            width: 100%;
+            left: 0;
+        }
+        .layui-layout-admin .layui-footer{
+            left: 0;
+        }
+        .table_fl {
+            width: 10%;
+            color: #ef741c;
+            height: 30px;
+        }
+        .table_bt {
+            width: 60%;
+            cursor:pointer;
+            text-align: left;
+        }
+        .table_zz {
+            width: 10%;
+            color: #999;
+        }
+        .table_sj {
+            width: 20%;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo" style="letter-spacing: 5px">
+            安心筹
+        </div>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    纸飞机
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">修改密码</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退出</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-body" >
+        <div style="width: 48%;height: 48%;border: 2px solid #B5B5B5;float: left;margin-left: 1%" id="carouselDiv">
+            <div class="layui-carousel" id="carousel" lay-filter="carousel">
+                <div carousel-item>
+                    <div style="background-color: #009688">条目1</div>
+                    <div style="background-color: #5FB878">条目2</div>
+                    <div style="background-color: #009688">条目3</div>
+                    <div style="background-color: #5FB878">条目4</div>
+                    <div style="background-color: #009688">条目5</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="width: 48%;height: 48%;border: 2px solid #B5B5B5;float: left;margin-left: 2%" id="undoneDiv">
+            <div class="layui-tab layui-tab-card">
+                <ul class="layui-tab-title" style="margin-top: -10px">
+                    <li class="layui-this">公益列表</li>
+                    <!-- <li>用户管理</li>
+                     <li>权限分配</li>
+                     <li>商品管理</li>
+                     <li>订单管理</li>-->
+                </ul>
+                <div class="layui-tab-content" >
+                    <div class="layui-tab-item layui-show">
+                        <table style="width: 100%;text-align: center" id="table1">
+                            <tr>
+                                <td  class="table_fl">[公司公告]</td>
+                                <td  class="table_bt"><a>关于公司人事任免的通知</a></td>
+                                <td  class="table_zz">作者</td>
+                                <td  class="table_sj">2019-09-23</td>
+                            </tr>
+
+                            <tr>
+                                <td  class="table_fl">[公司公告]</td>
+                                <td  class="table_bt"><a>关于举行第二期新员工入职培训的通知</a></td>
+                                <td  class="table_zz">作者</td>
+                                <td  class="table_sj">2019-09-23</td>
+                            </tr>
+
+                            <tr>
+                                <td  class="table_fl">[公司公告]</td>
+                                <td  class="table_bt"><a>关于举行“凝聚嘉彰，同心同行”暨聚米圣斗士及最可爱聚米人表彰大会的通知</a></td>
+                                <td  class="table_zz">作者</td>
+                                <td  class="table_sj">2019-09-23</td>
+                            </tr>
+                        </table>
+                        <div id="laypage1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="width: 98%;height: 48%;border: 2px solid #B5B5B5;float: left;margin-left: 1%;margin-top: 1%">
+            <table style="width: 100%;height: 80%; text-align: center" id="table2">
+                <tr>
+                    <td  class="table_fl">[公司公告]</td>
+                    <td  class="table_bt">关于公司人事任免的通知</td>
+                    <td  class="table_zz">作者</td>
+                    <td  class="table_sj">2019-09-23</td>
+                </tr>
+
+                <tr>
+                    <td  class="table_fl">[公司公告]</td>
+                    <td  class="table_bt">关于举行第二期新员工入职培训的通知</td>
+                    <td  class="table_zz">作者</td>
+                    <td  class="table_sj">2019-09-23</td>
+                </tr>
+
+                <tr>
+                    <td  class="table_fl">[公司公告]</td>
+                    <td  class="table_bt">关于举行“凝聚嘉彰，同心同行”暨聚米圣斗士及最可爱聚米人表彰大会的通知</td>
+                    <td  class="table_zz">作者</td>
+                    <td  class="table_sj">2019-09-23</td>
+                </tr>
+
+                <tr>
+                    <td  class="table_fl">[公司公告]</td>
+                    <td  class="table_bt">关于举行“凝聚嘉彰，同心同行”暨聚米圣斗士及最可爱聚米人表彰大会的通知</td>
+                    <td  class="table_zz">作者</td>
+                    <td  class="table_sj">2019-09-23</td>
+                </tr>
+
+                <tr>
+                    <td  class="table_fl">[公司公告]</td>
+                    <td  class="table_bt">关于举行“凝聚嘉彰，同心同行”暨聚米圣斗士及最可爱聚米人表彰大会的通知</td>
+                    <td  class="table_zz">作者</td>
+                    <td  class="table_sj">2019-09-23</td>
+                </tr>
+
+                <tr>
+                    <td  class="table_fl">[公司公告]</td>
+                    <td  class="table_bt">关于举行“凝聚嘉彰，同心同行”暨聚米圣斗士及最可爱聚米人表彰大会的通知</td>
+                    <td  class="table_zz">作者</td>
+                    <td  class="table_sj">2019-09-23</td>
+                </tr>
+
+                <tr>
+                    <td  class="table_fl">[公司公告]</td>
+                    <td  class="table_bt">关于举行“凝聚嘉彰，同心同行”暨聚米圣斗士及最可爱聚米人表彰大会的通知</td>
+                    <td  class="table_zz">作者</td>
+                    <td  class="table_sj">2019-09-23</td>
+                </tr>
+
+                <tr>
+                    <td  class="table_fl">[公司公告]</td>
+                    <td  class="table_bt">关于举行“凝聚嘉彰，同心同行”暨聚米圣斗士及最可爱聚米人表彰大会的通知</td>
+                    <td  class="table_zz">作者</td>
+                    <td  class="table_sj">2019-09-23</td>
+                </tr>
+
+            </table>
+            <div id="laypage2" style="margin-left: 50px;margin-top: 30px"></div>
+        </div>
+    </div>
+
+    <div class="layui-footer" style="text-align: center;font-size: 0.3em;color:#B5B5B5">
+        为了获得最佳操作体验，建议您使用最新版本的浏览器，支持1024 X 768以上分辨率
+    </div>
+
+</div>
+
+
+
+</body>
+<script src="static/dist/layui.js" type="text/javascript"></script>
+<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+<script>
+    //JavaScript代码区域
+    var tabWindowHeight=0;
+    layui.use(['carousel', 'form','element','table','laypage'], function(){
+        var element = layui.element,
+            carousel = layui.carousel
+            ,form = layui.form
+            ,table  =layui.table
+            ,laypage= layui.laypage;
+        //常规轮播
+        carousel.render({
+            elem: '#carousel'
+            ,arrow: 'hover'
+            ,height:'100%'
+            ,width:'100%'
+        });
+
+        laypage.render({
+            elem: 'laypage1' //注意，这里的 test1 是 ID，不用加 # 号
+            ,count: 50 //数据总数，从服务端得到
+        });
+
+        laypage.render({
+            elem: 'laypage2' //注意，这里的 test1 是 ID，不用加 # 号
+            ,count: 50 //数据总数，从服务端得到
+        });
+    });
+
+    $(function(){
+        var undoneDivHeight=$("#undoneDiv").css("height");
+        undoneDivHeight=undoneDivHeight.substring(0,undoneDivHeight.length-2);
+        var tabTileHeight=$(".layui-tab-title").css("height");
+        tabTileHeight=tabTileHeight.substring(0,tabTileHeight.length-2);
+        tabWindowHeight=undoneDivHeight -tabTileHeight-30;
+        $(".layui-tab-content").css("height",tabWindowHeight);
+        $("#table1").css("height",tabWindowHeight-40);
+    });
+</script>
+</html>
