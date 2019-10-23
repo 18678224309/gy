@@ -46,6 +46,10 @@
             width: 20%;
             color: #999;
         }
+        .layui-upload-img{
+            width: 150px;
+            height: 100px;
+        }
     </style>
 </head>
 <body>
@@ -56,6 +60,7 @@
         </div>
 
         <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item"><a href="javaScript:void (0)" onclick="startCj()">发起筹集</a></li>
             <li class="layui-nav-item">
                 <a href="javascript:;">
                     <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
@@ -199,12 +204,15 @@
 <script>
     //JavaScript代码区域
     var tabWindowHeight=0;
-    layui.use(['carousel', 'form','element','table','laypage'], function(){
-        var element = layui.element,
+    var element,carousel,form,table,laypage,layer,upload;
+    layui.use(['carousel', 'form','element','table','laypage','upload'], function(){
+            element = layui.element,
             carousel = layui.carousel
             ,form = layui.form
             ,table  =layui.table
-            ,laypage= layui.laypage;
+            ,laypage= layui.laypage
+            ,layer=layui.layer
+            ,upload=layui.upload;
         //常规轮播
         carousel.render({
             elem: '#carousel'
@@ -222,7 +230,64 @@
             elem: 'laypage2' //注意，这里的 test1 是 ID，不用加 # 号
             ,count: 50 //数据总数，从服务端得到
         });
+
     });
+
+    var content='<div class="layui-form layui-form-pane" >  ' +
+        '<div class="layui-form-item" style="margin-left: 10%"><label class="layui-form-label">请输入：</label> <div class="layui-input-block"> <input type="number" name="money" required  lay-verify="required" placeholder="请输入金额" class="layui-input" style="width: 300px"> </div> </div> ' +
+        '<div class="layui-form-item" style="margin-left: 10%"><label class="layui-form-label">标题：</label> <div class="layui-input-block"> <input type="text" name="title" required  lay-verify="required" placeholder="请输入标题" class="layui-input" style="width: 300px"> </div> </div> ' +
+        '<div class="layui-form-item layui-form-text" style="margin-left: 10%"><label class="layui-form-label" style="width: 80%">描述：</label> <div class="layui-input-block"> <textarea name="describe" placeholder="请输入内容" class="layui-textarea" style="width: 80%"></textarea> </div> </div> ' +
+        '<div class="layui-form-item layui-form-text" style="margin-left: 10%">   ' +
+        '       <div class="layui-upload">\n' +
+        '            <button type="button" class="layui-btn" id="test2">多图片上传</button>\n' +
+        '           <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;"> 预览图：\n' +
+        '                <div class="layui-upload-list" id="demo2"></div>\n' +
+        '            </blockquote>\n' +
+        '        </div></div> ' +
+        '</div>'
+
+    function startCj(){
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-molv',
+            offset: 'auto',
+            area: ['600px', '500px'],
+            btn: ['确认', '取消',],
+            btnAlign:'c',
+            resize:false,
+            content: content //这里content是一个普通的String
+            ,yes: function(index, layero){
+
+            }
+            ,btn2: function(index, layero){
+                //按钮【按钮二】的回调
+                //return false 开启该代码可禁止点击该按钮关闭
+            }
+            ,cancel: function(){
+                //右上角关闭回调
+                //return false; 开启该代码可禁止点击该按钮关闭
+            },
+        });
+        //多图片上传
+        upload.render({
+            elem: '#test2'
+            ,url: 'article/uoloadImg'
+            ,multiple: true
+            ,accept:'images'
+            ,acceptMime: 'image/*'
+            ,field:'photos'
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    $('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img">')
+                });
+            }
+            ,done: function(res){
+                //上传完毕
+                console.log(res);
+            }
+        });
+    }
 
     $(function(){
         var undoneDivHeight=$("#undoneDiv").css("height");
