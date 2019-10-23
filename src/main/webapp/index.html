@@ -72,7 +72,7 @@
 					<a href="javascript:void(0);" onclick="goRes(2)" style="font-size: 50px;">
 						×
 					</a></span>
-					<form class="layui-form" id="login">
+					<form class="layui-form" id="zhuces">
 						<div class="layui-form-item">
 							<label class="layui-form-label">用户名</label>
 							<div class="layui-input-block">
@@ -99,7 +99,7 @@
 
 						<div class="layui-form-item">
 							<div class="layui-input-block">
-								<button class="layui-btn" lay-submit lay-filter="formDemo" type="button" onclick="getInfo()">注册</button>
+								<button class="layui-btn" lay-submit lay-filter="formDemo" type="button" onclick="getInfo('zhuces')">注册</button>
 								<button type="reset" class="layui-btn layui-btn-primary">重置</button>
 							</div>
 						</div>
@@ -109,7 +109,7 @@
 			</div>
 			<!-- ------------------------------------------------------------------------------------------------------------------------------------------- -->
 			<div class="login_style" style="height: 50%;width: 25%;margin-top: 3%;margin-left: 65%;">
-				<form class="layui-form" action="">
+				<form class="layui-form" action="" id="login">
 					<div class="layui-form-item">
 						<label class="layui-form-label">用户名</label>
 						<div class="layui-input-block">
@@ -127,7 +127,7 @@
 					</div>
 					<div class="layui-form-item">
 						<div class="layui-input-block">
-							<button class="layui-btn" lay-submit lay-filter="formDemo" type="button">登录</button>
+							<button class="layui-btn" lay-submit lay-filter="formDemo" type="button" onclick="getInfo('login')">登录</button>
 							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
 							<div id="" style="float: right;">
 								<a href="javascript:void(0);" onclick="goRes(1)">注册</a>
@@ -158,9 +158,20 @@
 			});
 		});
 
-		function getInfo() {
-			var params = $('#login').serialize();
-			// alert(JSON.stringify(params));
+		function getInfo(obj) {
+			var params = $('#'+obj).serialize();
+			console.log(params)
+            console.log(1)
+			$.ajax({
+                url:"user/login",
+                async:true,
+                data:params,
+                success:function(data){
+                    console.log(data)
+                },
+                type:"post",
+                dataType:"json"
+            })
 		}
 
 		function goRes(num) {
