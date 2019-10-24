@@ -43,6 +43,18 @@ public class UserController {
         return 1;
     }
 
+    /*判断用户名和电话是否重复*/
+    @RequestMapping("/isRepeat")
+    public int isRepeat(@RequestParam("username")String uname,@RequestParam("phone")String phone){
+        if(uname != null && uname != ""){
+            System.out.println(uname+"----");
+        }
+        if(phone != null && phone != ""){
+            System.out.println(phone+"----");
+        }
+        return 1;
+    }
+
 //    @RequestMapping("/re")
 
 }

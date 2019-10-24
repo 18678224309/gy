@@ -76,8 +76,8 @@
 						<div class="layui-form-item">
 							<label class="layui-form-label">用户名</label>
 							<div class="layui-input-inline">
-								<input type="text" value="" name="username" required lay-verify="required" placeholder="请输入用户名" autocomplete="off"
-								 class="layui-input">
+								<input id="changuname" oninput="isRepest('changuname')" type="text" value="" name="username" required
+								 lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
 							</div>
 						</div>
 
@@ -93,7 +93,8 @@
 							<div class="layui-inline">
 								<label class="layui-form-label">验证手机</label>
 								<div class="layui-input-inline">
-									<input type="tel" name="phone" lay-verify="required|phone" autocomplete="off" class="layui-input">
+									<input id="changphone" oninput="isRepest('changphone')" type="tel" name="phone" lay-verify="required|phone"
+									 autocomplete="off" class="layui-input">
 								</div>
 							</div>
 
@@ -167,7 +168,7 @@
 					dataType: "json"
 				})
 			});
-			
+
 			//注册
 			form.on('submit(formDemo11)', function(data) {
 				$.ajax({
@@ -181,9 +182,7 @@
 					dataType: "json"
 				})
 			});
-
 		});
-
 
 		function goRes(num) {
 			if (num == 1) {
@@ -192,6 +191,40 @@
 			if (num == 2) {
 				$("#zhuce").css("display", "none");
 			}
+		}
+		//手机号  用户名是否重复
+		function isRepest(obj) {
+			let key
+			let val = $('#' + obj).val();
+			if (obj == "changuname") {
+				key = {
+					username: val,
+					phone: ""
+				}
+				ajaxs(key)
+			}
+			if (obj == "changphone" && val.length >= 11) {
+				key = {
+					username: "",
+					phone: val
+				}
+				ajaxs(key)
+			}
+
+			// layer.msg("hello")
+		}
+		////手机号  用户名是否重复 ajax
+		function ajaxs(key){
+			$.ajax({
+				url: "user/isRepeat",
+				async: true,
+				data: key,
+				success: function(data) {
+					console.log(data)
+				},
+				type: "post",
+				dataType: "json"
+			})
 		}
 	</script>
 </html>
