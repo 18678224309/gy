@@ -1,9 +1,12 @@
 package com.jtfu.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jtfu.entity.Article;
 import com.jtfu.service.IArticleService;
 import com.jtfu.util.R;
+import com.sun.corba.se.spi.orbutil.threadpool.WorkQueue;
 import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -75,6 +79,54 @@ public class ArticleController {
         }
         return R.success();
     }
+
+
+
+    @PostMapping("/getList")
+    @ResponseBody
+    public R getList(@RequestParam Map map){
+        Field[] fields= Article.class.getDeclaredFields();
+        QueryWrapper queryWrapper=new QueryWrapper();
+        Page page=new Page();
+        page.setCurrent(Long.valueOf(map.get("curr").toString()));
+        page.setSize(Long.valueOf( map.get("limit").toString()));
+
+        for (int i = 0; i < fields.length; i++) {
+            Field field= fields[i];
+            String fieldName=field.getName();
+            if(map.containsKey(fieldName)){
+                queryWrapper.eq(fieldName,map.get(fieldName));
+            }
+        }
+        articleService.page(page,queryWrapper);
+        return R.success().set("page",page);
+    }
+
+
+    @PostMapping("/getSlideShow")
+    @ResponseBody
+    public R getSlideShow(){
+        QueryWrapper wrapper=new QueryWrapper();
+        wrapper.eq("status",1);
+        wrapper.isNotNull("photos");
+        wrapper.ne("photos","");
+        wrapper.orderByAsc("createtime");
+        List<Article> list= articleService.list(wrapper);
+        if(list.size()>5){
+            list.subList(0,5);
+        }
+        for (int i=0;i<list.size();i++){
+            Article article=list.get(i);
+            String photoDir= article.getPhotos();
+            File file=new File(photoDir);
+            File[] files= file.listFiles();
+            article.setPhotos(photoDir.substring(photoDir.indexOf("static"),photoDir.length())+"\\"+files[0].getName());
+            list.set(i,article);
+        }
+
+        return R.success().set("SlideShow",list);
+    }
+
 
     /**
      * 删除文件或文件夹
