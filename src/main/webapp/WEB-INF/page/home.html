@@ -191,7 +191,7 @@
     </div>
 
     <div class="layui-footer" style="text-align: center;font-size: 0.3em;color:#B5B5B5">
-        <input type="hidden" id="urlPath" value="first">
+        <input type="hidden" id="urlPath" value="">
         为了获得最佳操作体验，建议您使用最新版本的浏览器，支持1024 X 768以上分辨率
     </div>
 
@@ -236,9 +236,9 @@
     });
 
     var content='<div class="layui-form layui-form-pane" >  ' +
-        '<div class="layui-form-item" style="margin-left: 10%"><label class="layui-form-label">请输入：</label> <div class="layui-input-block"> <input type="number" name="money" required  lay-verify="required" placeholder="请输入金额" class="layui-input" style="width: 300px"> </div> </div> ' +
-        '<div class="layui-form-item" style="margin-left: 10%"><label class="layui-form-label">标题：</label> <div class="layui-input-block"> <input type="text" name="title" required  lay-verify="required" placeholder="请输入标题" class="layui-input" style="width: 300px"> </div> </div> ' +
-        '<div class="layui-form-item layui-form-text" style="margin-left: 10%"><label class="layui-form-label" style="width: 80%">描述：</label> <div class="layui-input-block"> <textarea name="describe" placeholder="请输入内容" class="layui-textarea" style="width: 80%"></textarea> </div> </div> ' +
+        '<div class="layui-form-item" style="margin-left: 10%"><label class="layui-form-label">请输入：</label> <div class="layui-input-block"> <input type="number" name="money" id="money" required  lay-verify="required" placeholder="请输入金额" class="layui-input" style="width: 300px" oninput="changeIntValue(this)"> </div> </div> ' +
+        '<div class="layui-form-item" style="margin-left: 10%"><label class="layui-form-label">标题：</label> <div class="layui-input-block"> <input type="text" name="title" id="title" required  lay-verify="required" placeholder="请输入标题" class="layui-input" style="width: 300px" oninput="changeIntValue(this)"> </div> </div> ' +
+        '<div class="layui-form-item layui-form-text" style="margin-left: 10%"><label class="layui-form-label" style="width: 80%">描述：</label> <div class="layui-input-block"> <textarea name="describe" id="describe" placeholder="请输入内容" class="layui-textarea" style="width: 80%"></textarea> </div> </div> ' +
         '<div class="layui-form-item layui-form-text" style="margin-left: 10%">   ' +
         '       <div class="layui-upload">\n' +
         '            <button type="button" class="layui-btn" id="test2">多图片上传</button>\n' +
@@ -247,6 +247,22 @@
         '            </blockquote>\n' +
         '        </div></div> ' +
         '</div>'
+
+    function changeIntValue(item){
+         let lableId=$(item).attr("id");
+         let value=$(item).val();
+         switch (lableId) {
+             case "title":
+                 if(value.length>25){
+                     $(item).val(value.substring(0,25));
+                     alert("限制最大输入25！！")
+                 }
+                 break;
+             case "money":
+                 $(item).val(value.replace(/[^0-9]/g, ''));
+                 break;
+         }
+    }
 
     function startCj(){
         layer.open({
@@ -259,11 +275,21 @@
             resize:false,
             content: content //这里content是一个普通的String
             ,yes: function(index, layero){
-
+                    var money=$("#money").val();
+                    var title=$("#title").val();
+                    var describe=$("#describe").val();
+                    var urlPath=$("#urlPath").val();
+                    $.post("article/saveArticle",{money:money,title:title,describe:describe,urlPath:urlPath},function(res){
+                        if(res.code==200){
+                            alert(res.msg);
+                            layer.close(index);
+                        }
+                    });
             }
             ,btn2: function(index, layero){
                 //按钮【按钮二】的回调
                 $.post("article/removeImg",{url:$('#urlPath').val()},function(res){
+                    $("#urlPath").val("");
                     console.log(res);
                 });
                 //return false 开启该代码可禁止点击该按钮关闭
@@ -273,6 +299,7 @@
                 //return false; 开启该代码可禁止点击该按钮关闭
             },
         });
+
         //多图片上传
         upload.render({
             elem: '#test2'
@@ -281,19 +308,31 @@
             ,accept:'images'
             ,acceptMime: 'image/*'
             ,field:'photos'
-            ,data:{url: function(){
-                    return $('#urlPath').val();
+            ,data:{url:function(){
+                    return $("#urlPath").val();
                 }}
             ,before: function(obj){
+                let urlPathVal=$("#urlPath").val();
+                if(urlPathVal===""){
+                    $.ajax({
+                        url:'article/genKey',async:false,type:"POST",success:function(res){
+                            $("#urlPath").val(res.key);
+
+                        }
+                    });
+                }
                 //预读本地文件示例，不支持ie8
                 obj.preview(function(index, file, result){
                     $('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img">')
                 });
-            }
-            ,done: function(res){
-                //上传完毕
-                $("#urlPath").val(res.urlsPath);
-            }
+            }/*,allDone: function(obj){ //当文件全部被提交后，才触发
+                console.log(obj.total); //得到总文件数
+                console.log(obj.successful); //请求成功的文件数
+                console.log(obj.aborted); //请求失败的文件数
+            }*/
+            /*,done: function(res, index, upload){ //每个文件提交一次触发一次。详见“请求成功的回调”
+               // alert(res.urlsPath);
+            }*/
         });
     }
 
