@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpSession;
+
 /**
  * <p>
  *  前端控制器
@@ -39,12 +41,16 @@ public class UserController {
     }
 /*登录*/
     @RequestMapping("/login")
-    public int login(@RequestParam("username")String uname,@RequestParam("password")String pwd){
+    public int login(@RequestParam("username")String uname, @RequestParam("password")String pwd, HttpSession session){
         System.out.println(uname+"-----"+pwd);
         QueryWrapper qw = new QueryWrapper();
         qw.eq("username",uname);
         qw.eq("password",pwd);
         int res = userService.count(qw);
+        if(res == 1){
+            User user = userService.getOne(qw);
+            session.setAttribute("userInfo",user);
+        }
         System.out.println(res+"=--------------------------");
         return res;
     }
