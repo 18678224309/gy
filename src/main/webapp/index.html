@@ -141,6 +141,9 @@
 		</div>
 	</body>
 	<script type="text/javascript">
+		// 全局变量
+		var phones = false,usernames = false;
+		
 		layui.use(['form', 'layedit', 'laydate'], function() {
 			var form = layui.form,
 				layer = layui.layer,
@@ -171,19 +174,86 @@
 
 			//注册
 			form.on('submit(formDemo11)', function(data) {
-				$.ajax({
-					url: "user/register",
-					async: true,
-					data: $('#zhuces').serialize(),
-					success: function(data) {
-						console.log(data)
-					},
-					type: "post",
-					dataType: "json"
-				})
+				alert(phones+"---"+usernames)
+				if(phones == true && usernames == true){
+					$.ajax({
+						url: "user/register",
+						async: true,
+						data: $('#zhuces').serialize(),
+						success: function(data) {
+							console.log(data)
+						},
+						type: "post",
+						dataType: "json"
+					})
+				}else{
+					layer.msg("用户名或手机号不符要求")
+				}
 			});
 		});
 
+		
+		//手机号  用户名是否重复
+		function isRepest(obj) {
+			let key
+			let val = $('#' + obj).val();
+			if (obj == "changuname") {
+				key = {
+					username: val
+				}
+				$.ajax({
+					url: "user/isRepeatName",
+					async: true,
+					data: key,
+					type: "post",
+					dataType: "json",
+					success: function(data) {
+						console.log(data)
+						if(data == 1){
+							usernames = true
+						}else{
+							usernames = false
+						}
+						
+						if(data == 11){
+							layer.msg("用户名已存在")
+						}
+					}
+				})
+			}
+			// 
+			if (obj == "changphone" && val.length >= 11) {
+				key = {
+					phone: val
+				}
+				$.ajax({
+					url: "user/isRepeatPhone",
+					async: true,
+					data: key,
+					type: "post",
+					dataType: "json",
+					success: function(data) {
+						console.log(data)
+						if(data == 2){
+							phones = true
+						}else{
+							phones = false
+						}
+						if(data == 22){
+							layer.msg("手机号已存在")
+						}
+					}
+				})
+			}
+			// layer.msg("hello")
+		}
+		
+		
+		////手机号  用户名是否重复 ajax
+		function ajaxs(key,obj){
+			
+		}
+		
 		function goRes(num) {
 			if (num == 1) {
 				$("#zhuce").css("display", "block");
@@ -191,40 +261,6 @@
 			if (num == 2) {
 				$("#zhuce").css("display", "none");
 			}
-		}
-		//手机号  用户名是否重复
-		function isRepest(obj) {
-			let key
-			let val = $('#' + obj).val();
-			if (obj == "changuname") {
-				key = {
-					username: val,
-					phone: ""
-				}
-				ajaxs(key)
-			}
-			if (obj == "changphone" && val.length >= 11) {
-				key = {
-					username: "",
-					phone: val
-				}
-				ajaxs(key)
-			}
-
-			// layer.msg("hello")
-		}
-		////手机号  用户名是否重复 ajax
-		function ajaxs(key){
-			$.ajax({
-				url: "user/isRepeat",
-				async: true,
-				data: key,
-				success: function(data) {
-					console.log(data)
-				},
-				type: "post",
-				dataType: "json"
-			})
 		}
 	</script>
 </html>

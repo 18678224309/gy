@@ -39,22 +39,42 @@ public class UserController {
         QueryWrapper qw = new QueryWrapper();
         qw.eq("username",uname);
         qw.eq("password",pwd);
-        System.out.println(userService.list(qw).toString());
         return 1;
     }
 
-    /*判断用户名和电话是否重复*/
-    @RequestMapping("/isRepeat")
-    public int isRepeat(@RequestParam("username")String uname,@RequestParam("phone")String phone){
+/*判断用户名和电话是否重复*/
+    @RequestMapping("/isRepeatName")
+    public int isRepeatName(@RequestParam("username")String uname){
         if(uname != null && uname != ""){
             System.out.println(uname+"----");
+            QueryWrapper qw = new QueryWrapper();
+            qw.eq("username",uname);
+            int res = userService.count(qw);
+            System.out.println(res+"------------------------------");
+            if(res == 0){
+                return 1;
+            }else{
+                // 用户名存储在
+                return 11;
+            }
         }
+        return 99;
+    }
+    @RequestMapping("/isRepeatPhone")
+    public int isRepeatPhone(@RequestParam("phone")String phone){
         if(phone != null && phone != ""){
             System.out.println(phone+"----");
+            QueryWrapper qw = new QueryWrapper();
+            qw.eq("phone",phone);
+            int res = userService.count(qw);
+            System.out.println(res+"------------------------------");
+            if(res == 0){
+                return 2;
+            }else{
+                // 用户名存储在
+                return 22;
+            }
         }
-        return 1;
+        return 99;
     }
-
-//    @RequestMapping("/re")
-
 }
