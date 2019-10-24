@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -40,9 +41,9 @@ public class User implements Serializable {
 
     private Integer delFlag;
 
-    private LocalDateTime updatetime;
+    private Date updatetime;
 
-    private LocalDateTime createtime;
+    private Date createtime;
 
     private Integer roleid;
 
@@ -123,18 +124,18 @@ public class User implements Serializable {
     public void setDelFlag(Integer delFlag) {
         this.delFlag = delFlag;
     }
-    public LocalDateTime getUpdatetime() {
+    public Date getUpdatetime() {
         return updatetime;
     }
 
-    public void setUpdatetime(LocalDateTime updatetime) {
+    public void setUpdatetime(Date updatetime) {
         this.updatetime = updatetime;
     }
-    public LocalDateTime getCreatetime() {
+    public Date getCreatetime() {
         return createtime;
     }
 
-    public void setCreatetime(LocalDateTime createtime) {
+    public void setCreatetime(Date createtime) {
         this.createtime = createtime;
     }
     public Integer getRoleid() {
