@@ -2,6 +2,7 @@ package com.jtfu.controller;
 
 
 import com.jtfu.mapper.UserMapper;
+import com.jtfu.service.IUserService;
 import com.jtfu.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,12 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     @Autowired
-    UserServiceImpl userService;
+    IUserService userService;
 
     @RequestMapping("/login")
     public int login(@RequestParam("title")String uname,@RequestParam("password")String pwd){
         System.out.println(uname+"-----"+pwd);
-
         return 1;
     }
 
