@@ -1,7 +1,11 @@
 package com.jtfu.controller;
 
 
+import com.jtfu.entity.Article;
+import com.jtfu.service.IArticleService;
 import com.jtfu.util.R;
+import com.sun.org.apache.regexp.internal.RE;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -16,32 +21,50 @@ import java.util.*;
 @RequestMapping("/article")
 public class ArticleController {
 
+    @Autowired
+    IArticleService articleService;
+
     @PostMapping("/uoloadImg")
     @ResponseBody
     public R uoloadImg(@RequestPart("photos") MultipartFile photos,@RequestParam("url") String url, HttpServletRequest request) throws Exception {
-        File file;
-        String path="";
-        if(url.equals("first")){
-            String staticPath=request.getRealPath("static");
-            SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
-            path=staticPath+"\\image\\"+UUID.randomUUID().toString();
-            file=new File(path);
-            if(!file.exists()){
-                file.mkdir();
-            }
-            file=new File(path+"/"+ photos.getOriginalFilename());
-        }else{
-            file=new File(url+"/"+ photos.getOriginalFilename());
-            path=url;
-        }
-
+        String pathName=url+"/"+photos.getOriginalFilename();
+        System.err.println(pathName);
+        File file=new File(pathName);
         OutputStream outputStream=new FileOutputStream(file);
         outputStream.write(photos.getBytes());
         outputStream.flush();
         outputStream.close();
-        return R.success().set("urlsPath",path);
+        return R.success();
     }
 
+    @PostMapping("/genKey")
+    @ResponseBody
+    public R genKey(HttpServletRequest request){
+        String uuid=UUID.randomUUID().toString();
+        String staticPath=request.getRealPath("static");
+        String path=staticPath+"\\image\\"+uuid;
+        File file=new File(path);
+        if(!file.exists()){
+            file.mkdir();
+        }
+        return R.success().set("key",path);
+    }
+
+    @PostMapping("/saveArticle")
+    @ResponseBody
+    public R saveArticle(String title,String describe,int money,String urlPath){
+        Article article=new Article();
+        article.setTitle(title);
+        article.setAuth("取Session用户名");
+        article.setAuthId(0);
+        article.setMoney(money);
+        article.setDescribe(describe);
+        article.setPhotos(urlPath);
+        article.setCreatetime(new Date());
+        article.setStatus(1);
+        articleService.save(article);
+        return R.success();
+    }
 
     @PostMapping("/removeImg")
     @ResponseBody
