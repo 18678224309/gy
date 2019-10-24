@@ -61,23 +61,23 @@
 	<body>
 
 
-		<div style="width: 100%;height: 10%;" >
+		<div style="width: 100%;height: 10%;">
 			<img src="static/image/logo.jpg" style="margin-left: 20%">
 		</div>
 		<div id="big_style" style="height: 60%;width: 95%;margin-top: 2%;margin-left: auto;margin-right: auto;background:url('static/image/background.jpg') no-repeat;background-size:100%;">
 			<div class="big_back" id="zhuce">
 
 				<div class="zhuce_">
-					<span style="display: block; float: right;"  >
-					<a href="javascript:void(0);" onclick="goRes(2)" style="font-size: 50px;">
-						×
-					</a></span>
-					<form class="layui-form" id="zhuces">
+					<span style="display: block; float: right;">
+						<a href="javascript:void(0);" onclick="goRes(2)" style="font-size: 50px;">
+							×
+						</a></span>
+					<form class="layui-form" action="" id="zhuces">
 						<div class="layui-form-item">
 							<label class="layui-form-label">用户名</label>
-							<div class="layui-input-block">
-								<input type="text" value="" name="title" required lay-verify="required" placeholder="请输入用户名" autocomplete="off"
-								 class="layui-input">
+							<div class="layui-input-inline">
+								<input id="changuname" oninput="isRepest('changuname')" type="text" value="" name="username" required
+								 lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
 							</div>
 						</div>
 
@@ -90,52 +90,53 @@
 						</div>
 
 						<div class="layui-form-item">
-							<label class="layui-form-label">性别</label>
-							<div class="layui-input-block">
-								<input type="radio" name="sex" value="0" title="男">
-								<input type="radio" name="sex" value="1" title="女" checked>
+							<div class="layui-inline">
+								<label class="layui-form-label">验证手机</label>
+								<div class="layui-input-inline">
+									<input id="changphone" oninput="isRepest('changphone')" type="tel" name="phone" lay-verify="required|phone"
+									 autocomplete="off" class="layui-input">
+								</div>
 							</div>
-						</div>
 
-						<div class="layui-form-item">
-							<div class="layui-input-block">
-								<button class="layui-btn" lay-submit lay-filter="formDemo" type="button" onclick="getInfo('zhuces')">注册</button>
-								<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+							<div class="layui-form-item">
+								<div class="layui-input-block">
+									<button class="layui-btn" lay-submit lay-filter="formDemo11" type="button" onclick="">注册</button>
+									<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+								</div>
 							</div>
-						</div>
 					</form>
 				</div>
-
 			</div>
-			<!-- ------------------------------------------------------------------------------------------------------------------------------------------- -->
-			<div class="login_style" style="height: 50%;width: 25%;margin-top: 3%;margin-left: 65%;">
-				<form class="layui-form" action="" id="login">
-					<div class="layui-form-item">
-						<label class="layui-form-label">用户名</label>
-						<div class="layui-input-block">
-							<input type="text" name="title" required lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
-						</div>
+		</div>
+		<!-- ------------------------------------------------------------------------------------------------------------------------------------------- -->
+		<div class="login_style" style="height: 50%;width: 25%;margin-top: 3%;margin-left: 65%;">
+			<form class="layui-form" action="" id="login">
+				<div class="layui-form-item">
+					<label class="layui-form-label">用户名</label>
+					<div class="layui-input-block">
+						<input type="text" name="username" required lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
 					</div>
+				</div>
 
-					<div class="layui-form-item">
-						<label class="layui-form-label">密码框</label>
-						<div class="layui-input-block">
-							<input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off"
-							 class="layui-input">
-						</div>
-						<div class="layui-form-mid layui-word-aux"></div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">密码框</label>
+					<div class="layui-input-block">
+						<input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off"
+						 class="layui-input">
 					</div>
-					<div class="layui-form-item">
-						<div class="layui-input-block">
-							<button class="layui-btn" lay-submit lay-filter="formDemo" type="button" onclick="getInfo('login')">登录</button>
-							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
-							<div id="" style="float: right;">
-								<a href="javascript:void(0);" onclick="goRes(1)">注册</a>
-							</div>
+					<div class="layui-form-mid layui-word-aux"></div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="formDemo" type="button" onclick="">登录</button>
+						<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+						<div id="" style="float: right;">
+							<a href="javascript:void(0);" onclick="goRes(1)">注册</a>
 						</div>
 					</div>
-				</form>
-			</div>
+				</div>
+			</form>
+		</div>
 
 		</div>
 	</body>
@@ -151,28 +152,37 @@
 			form.verify({
 				pass: [
 					/^[\S]{6,12}$/, '密码必须6到12位，且不能出现空格'
-				],
-				content: function(value) {
-					layedit.sync(editIndex);
-				}
+				]
+			});
+
+			// 登录
+			form.on('submit(formDemo)', function(data) {
+				$.ajax({
+					url: "user/login",
+					async: true,
+					data: $('#login').serialize(),
+					success: function(data) {
+						console.log(data)
+					},
+					type: "post",
+					dataType: "json"
+				})
+			});
+
+			//注册
+			form.on('submit(formDemo11)', function(data) {
+				$.ajax({
+					url: "user/register",
+					async: true,
+					data: $('#zhuces').serialize(),
+					success: function(data) {
+						console.log(data)
+					},
+					type: "post",
+					dataType: "json"
+				})
 			});
 		});
-
-		function getInfo(obj) {
-			var params = $('#'+obj).serialize();
-			console.log(params)
-            console.log(1)
-			$.ajax({
-                url:"user/login",
-                async:true,
-                data:params,
-                success:function(data){
-                    console.log(data)
-                },
-                type:"post",
-                dataType:"json"
-            })
-		}
 
 		function goRes(num) {
 			if (num == 1) {
@@ -181,6 +191,40 @@
 			if (num == 2) {
 				$("#zhuce").css("display", "none");
 			}
+		}
+		//手机号  用户名是否重复
+		function isRepest(obj) {
+			let key
+			let val = $('#' + obj).val();
+			if (obj == "changuname") {
+				key = {
+					username: val,
+					phone: ""
+				}
+				ajaxs(key)
+			}
+			if (obj == "changphone" && val.length >= 11) {
+				key = {
+					username: "",
+					phone: val
+				}
+				ajaxs(key)
+			}
+
+			// layer.msg("hello")
+		}
+		////手机号  用户名是否重复 ajax
+		function ajaxs(key){
+			$.ajax({
+				url: "user/isRepeat",
+				async: true,
+				data: key,
+				success: function(data) {
+					console.log(data)
+				},
+				type: "post",
+				dataType: "json"
+			})
 		}
 	</script>
 </html>

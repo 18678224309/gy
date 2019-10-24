@@ -1,6 +1,8 @@
 package com.jtfu.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jtfu.entity.User;
 import com.jtfu.mapper.UserMapper;
 import com.jtfu.service.IUserService;
 import com.jtfu.service.impl.UserServiceImpl;
@@ -24,10 +26,32 @@ public class UserController {
 
     @Autowired
     IUserService userService;
-
+/*注册*/
+    @RequestMapping("/register")
+    public int register(@RequestParam("username")String uname,@RequestParam("password")String pwd,@RequestParam("phone")String phone){
+        System.out.println(uname+"---"+pwd+"---"+phone);
+        return 1;
+    }
+/*登录*/
     @RequestMapping("/login")
-    public int login(@RequestParam("title")String uname,@RequestParam("password")String pwd){
+    public int login(@RequestParam("username")String uname,@RequestParam("password")String pwd){
         System.out.println(uname+"-----"+pwd);
+        QueryWrapper qw = new QueryWrapper();
+        qw.eq("username",uname);
+        qw.eq("password",pwd);
+        System.out.println(userService.list(qw).toString());
+        return 1;
+    }
+
+    /*判断用户名和电话是否重复*/
+    @RequestMapping("/isRepeat")
+    public int isRepeat(@RequestParam("username")String uname,@RequestParam("phone")String phone){
+        if(uname != null && uname != ""){
+            System.out.println(uname+"----");
+        }
+        if(phone != null && phone != ""){
+            System.out.println(phone+"----");
+        }
         return 1;
     }
 
