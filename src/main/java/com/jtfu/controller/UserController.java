@@ -28,9 +28,14 @@ public class UserController {
     IUserService userService;
 /*注册*/
     @RequestMapping("/register")
-    public int register(@RequestParam("username")String uname,@RequestParam("password")String pwd,@RequestParam("phone")String phone){
-        System.out.println(uname+"---"+pwd+"---"+phone);
-        return 1;
+    public boolean register(@RequestParam("username")String username,@RequestParam("password")String pwd,@RequestParam("phone")String phone){
+        System.out.println(username+"---"+pwd+"---"+phone);
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(pwd);
+        user.setPhone(phone);
+        boolean res = userService.save(user);
+        return res;
     }
 /*登录*/
     @RequestMapping("/login")
@@ -39,7 +44,9 @@ public class UserController {
         QueryWrapper qw = new QueryWrapper();
         qw.eq("username",uname);
         qw.eq("password",pwd);
-        return 1;
+        int res = userService.count(qw);
+        System.out.println(res+"=--------------------------");
+        return res;
     }
 
 /*判断用户名和电话是否重复*/

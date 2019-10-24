@@ -165,7 +165,13 @@
 					async: true,
 					data: $('#login').serialize(),
 					success: function(data) {
-						console.log(data)
+						if(data == 1){
+							layer.msg("登陆成功")
+							location.href = "http://www.baidu.com";
+						}
+						if(data != 1){
+							layer.msg("密码错误或用户不存在")
+						}
 					},
 					type: "post",
 					dataType: "json"
@@ -174,14 +180,16 @@
 
 			//注册
 			form.on('submit(formDemo11)', function(data) {
-				alert(phones+"---"+usernames)
 				if(phones == true && usernames == true){
 					$.ajax({
 						url: "user/register",
 						async: true,
 						data: $('#zhuces').serialize(),
 						success: function(data) {
-							console.log(data)
+							if(data == true){
+								layer.msg("注册成功!")
+								$("#zhuce").css("display", "none");
+							}
 						},
 						type: "post",
 						dataType: "json"
@@ -214,7 +222,6 @@
 						}else{
 							usernames = false
 						}
-						
 						if(data == 11){
 							layer.msg("用户名已存在")
 						}
