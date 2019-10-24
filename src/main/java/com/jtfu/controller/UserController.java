@@ -28,7 +28,7 @@ public class UserController {
 
     @Autowired
     IUserService userService;
-/*注册*/
+    /*注册*/
     @RequestMapping("/register")
     public boolean register(@RequestParam("username")String username,@RequestParam("password")String pwd,@RequestParam("phone")String phone){
         System.out.println(username+"---"+pwd+"---"+phone);
@@ -39,7 +39,7 @@ public class UserController {
         boolean res = userService.save(user);
         return res;
     }
-/*登录*/
+    /*登录*/
     @RequestMapping("/login")
     public int login(@RequestParam("username")String uname, @RequestParam("password")String pwd, HttpSession session){
         System.out.println(uname+"-----"+pwd);
@@ -55,7 +55,7 @@ public class UserController {
         return res;
     }
 
-/*判断用户名和电话是否重复*/
+    /*判断用户名和电话是否重复*/
     @RequestMapping("/isRepeatName")
     public int isRepeatName(@RequestParam("username")String uname){
         if(uname != null && uname != ""){
