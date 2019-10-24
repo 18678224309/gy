@@ -90,4 +90,10 @@ public class UserController {
         }
         return 99;
     }
+
+    //退出登录
+    @RequestMapping("/ouLogin")
+    public void outLogin(HttpSession session){
+        session.removeAttribute("userInfo");
+    }
 }
