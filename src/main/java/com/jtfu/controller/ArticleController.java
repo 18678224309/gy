@@ -27,7 +27,9 @@ public class ArticleController {
     @PostMapping("/uoloadImg")
     @ResponseBody
     public R uoloadImg(@RequestPart("photos") MultipartFile photos,@RequestParam("url") String url, HttpServletRequest request) throws Exception {
-        File file=new File(url+"/"+photos.getOriginalFilename());
+        String pathName=url+"/"+photos.getOriginalFilename();
+        System.err.println(pathName);
+        File file=new File(pathName);
         OutputStream outputStream=new FileOutputStream(file);
         outputStream.write(photos.getBytes());
         outputStream.flush();
@@ -59,6 +61,7 @@ public class ArticleController {
         article.setDescribe(describe);
         article.setPhotos(urlPath);
         article.setCreatetime(new Date());
+        article.setStatus(1);
         articleService.save(article);
         return R.success();
     }

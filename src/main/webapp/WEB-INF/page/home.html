@@ -265,6 +265,7 @@
     }
 
     function startCj(){
+        $("#urlPath").val("");
         layer.open({
             type: 1,
             skin: 'layui-layer-molv',
@@ -289,7 +290,6 @@
             ,btn2: function(index, layero){
                 //按钮【按钮二】的回调
                 $.post("article/removeImg",{url:$('#urlPath').val()},function(res){
-                    $("#urlPath").val("");
                     console.log(res);
                 });
                 //return false 开启该代码可禁止点击该按钮关闭
@@ -325,14 +325,7 @@
                 obj.preview(function(index, file, result){
                     $('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img">')
                 });
-            }/*,allDone: function(obj){ //当文件全部被提交后，才触发
-                console.log(obj.total); //得到总文件数
-                console.log(obj.successful); //请求成功的文件数
-                console.log(obj.aborted); //请求失败的文件数
-            }*/
-            /*,done: function(res, index, upload){ //每个文件提交一次触发一次。详见“请求成功的回调”
-               // alert(res.urlsPath);
-            }*/
+            }
         });
     }
 

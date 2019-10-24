@@ -2,6 +2,8 @@ package com.jtfu.config;
 
 
 import org.springframework.context.annotation.*;
+import org.springframework.core.io.FileUrlResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
@@ -39,8 +41,7 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebMvcConfigur
     public CommonsMultipartResolver multipartResolver(){
         CommonsMultipartResolver resolver=new CommonsMultipartResolver();
         resolver.setDefaultEncoding("utf-8");
-        resolver.setMaxUploadSize(10485760000l);
-        resolver.setMaxInMemorySize(40960);
+        /*resolver.setMaxUploadSize(10485760000l);*/
         return resolver;
     }
 
