@@ -112,7 +112,9 @@ public class ArticleController {
         wrapper.ne("photos","");
         wrapper.orderByAsc("createtime");
         List<Article> list= articleService.list(wrapper);
-        list.subList(0,5);
+        if(list.size()>5){
+            list.subList(0,5);
+        }
         for (int i=0;i<list.size();i++){
             Article article=list.get(i);
             String photoDir= article.getPhotos();
