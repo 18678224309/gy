@@ -2,7 +2,8 @@ package com.jtfu.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jtfu.entity.Group;
+
+import com.jtfu.entity.Group1;
 
 /**
  * <p>
@@ -12,6 +13,6 @@ import com.jtfu.entity.Group;
  * @author jtfu
  * @since 2019-10-22
  */
-public interface GroupMapper extends BaseMapper<Group> {
+public interface GroupMapper extends BaseMapper<Group1> {
 
 }

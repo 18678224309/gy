@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/ssm_Demo/static/dist/css/layui.css" media="all">
+</head>
+<body>
+
+</body>
+<script src="/ssm_Demo/static/dist/layui.js"></script>
+<script>
+    layui.use('layim', function(layim){
+        //基础配置
+        layim.config({
+
+            init: {
+                url: 'getList' //接口地址（返回的数据格式见下文）
+            } //获取主面板列表信息，下文会做进一步介绍
+
+            //获取群员接口（返回的数据格式见下文）
+            ,members: {
+                url: '' //接口地址（返回的数据格式见下文）
+                ,type: 'get' //默认get，一般可不填
+                ,data: {} //额外参数
+            }
+
+            //上传图片接口（返回的数据格式见下文），若不开启图片上传，剔除该项即可
+            ,uploadImage: {
+                url: '' //接口地址
+                ,type: 'post' //默认post
+            }
+
+            ,msgbox: '/ssm_Demo/static/dist/css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
+            ,find: '/ssm_Demo/static/dist/css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
+            ,chatLog: '/ssm_Demo/static/dist/css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
+
+        });
+        let userId='${userId}';
+        let socket = new WebSocket('ws://192.168.8.48:8080/ssm_Demo/webSocket?userId='+userId);
+        layim.on('sendMessage', function(res){
+            let mine = res.mine; //包含我发送的消息及我的信息
+            let to = res.to; //对方的信息
+            //监听到上述消息后，就可以轻松地发送socket了，如：
+            socket.send(JSON.stringify({
+                type: 'chatMessage' //随便定义，用于在服务端区分消息类型
+                ,data: res
+            }));
+        });
+        socket.onmessage = function(res){
+            let data=JSON.parse(res.data);
+            console.log(data);
+           // obj = {"avatar":"http://img1.xcarimg.com/motonews/24455/32021/32049/20180906172744162560010864435.jpg","id":3,"username":"张原硕","content":data.content,"timestamp":1571986118983}
+            layim.getMessage(data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
+        };
+    });
+</script>
+</html>

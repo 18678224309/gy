@@ -2,7 +2,8 @@ package com.jtfu.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jtfu.entity.Group;
+import com.jtfu.entity.Group1;
+
 
 /**
  * <p>
@@ -12,6 +13,6 @@ import com.jtfu.entity.Group;
  * @author jtfu
  * @since 2019-10-22
  */
-public interface IGroupService extends IService<Group> {
+public interface IGroupService extends IService<Group1> {
 
 }

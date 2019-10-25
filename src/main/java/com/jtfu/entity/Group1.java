@@ -1,8 +1,10 @@
 package com.jtfu.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -12,7 +14,7 @@ import java.io.Serializable;
  * @author jtfu
  * @since 2019-10-22
  */
-public class Group implements Serializable {
+public class Group1 implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -25,6 +27,18 @@ public class Group implements Serializable {
      * 1：好友列表 2：群组
      */
     private String grouptype;
+
+    @TableField(exist = false)
+    private List<User> list;
+
+
+    public List<User> getList() {
+        return list;
+    }
+
+    public void setList(List<User> list) {
+        this.list = list;
+    }
 
     public Integer getId() {
         return id;
