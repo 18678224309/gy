@@ -3,7 +3,9 @@ package com.jtfu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jtfu.entity.User;
+import com.jtfu.entity.UserGroup;
 import com.jtfu.mapper.UserMapper;
+import com.jtfu.service.IUserGroupService;
 import com.jtfu.service.IUserService;
 import com.jtfu.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,8 @@ public class UserController {
 
     @Autowired
     IUserService userService;
+    @Autowired
+    IUserGroupService userGroupService;
     /*注册*/
     @RequestMapping("/register")
     public boolean register(@RequestParam("username")String username,@RequestParam("password")String pwd,@RequestParam("phone")String phone){
@@ -36,6 +40,11 @@ public class UserController {
         user.setUsername(username);
         user.setPassword(pwd);
         user.setPhone(phone);
+        user.setStatus("online");
+        user.setSign("在深邃的编码世界，做一枚轻盈的纸飞机");
+        user.setAvatar("http://img1.xcarimg.com/motonews/24455/32021/32049/20180906172744162560010864435.jpg");
+        user.setAge(0);
+        user.setSex("1");
         boolean res = userService.save(user);
         return res;
     }
