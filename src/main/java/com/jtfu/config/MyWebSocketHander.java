@@ -27,13 +27,11 @@ public class MyWebSocketHander implements WebSocketHandler {
         String userId=webSocketSession.getAttributes().get("userId").toString();
         USER_ONLINE.put(userId,webSocketSession);
         System.err.println(USER_ONLINE.size());
-        User user=userService.getById(userId);
-        user.setStatus("online");
-        userService.updateById(user);
     }
 
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
+        //接收前端webSocket发送的数据，进行解析，并发送给指定用户;
         String msgContent = webSocketMessage.getPayload().toString();
         sendMsgToUser(msgContent);
     }
@@ -43,11 +41,13 @@ public class MyWebSocketHander implements WebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
+        //发生错误时删除用户信息
         removeUser(webSocketSession);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
+        //关闭时删除用户信息
         removeUser(webSocketSession);
     }
 
@@ -59,9 +59,6 @@ public class MyWebSocketHander implements WebSocketHandler {
         USER_ONLINE.remove(userId);
         System.out.println(USER_ONLINE.size());
         webSocketSession.getAttributes().remove("userId");
-        User user=userService.getById(userId);
-        user.setStatus("offline");
-        userService.updateById(user);
     }
 
     public void  sendMsgToUser(String msgContent) throws IOException {

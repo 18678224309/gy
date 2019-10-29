@@ -30,7 +30,7 @@
             width: 150px;
             height: 100px;
         }
-        #masterDiv{
+        .masterDiv{
             width: 99%;
             float: left;
             border: 1px solid #a3c59a;
@@ -81,10 +81,10 @@
         </div>
 
         <div class="layui-body" >
-                <div id="masterDiv" >
+                <div class="masterDiv" >
                     <div class="imgDiv" style="float: left">
-                        <img src="${auth.avatar}" style="margin-top: 2%"></br></br></br></br>
-                        <label><a href="javaScript:void(0)">${auth.name}</a></label>
+                        <img src="${auth.avatar}" style="margin-top: 2%;width: 150px;height: 150px;"></br></br></br></br>
+                        <label onclick="add('${auth.id}','${auth.name}','${auth.avatar}')"><a href="javaScript:void(0)">${auth.name}：${auth.status}</a></label>
                     </div>
 
                      <div class="contentDiv" style="float: left">
@@ -99,10 +99,10 @@
                      </div>
                 </div>
                 <#list messages as message>
-                            <div id="masterDiv" >
+                            <div class="masterDiv" >
                                     <div class="imgDiv" style="float: left">
-                                        <img src="${message.user.avatar}" style="margin-top: 2%"></br></br></br></br>
-                                        <label><a href="javaScript:void(0)">${message.user.name}</a></label>
+                                        <img src="${message.user.avatar}" style="margin-top: 2%;width: 150px;height: 150px;"></br></br></br></br>
+                                        <label onclick="add()"><a href="javaScript:void(0)">${message.user.name}：${message.user.status}</a></label>
                                     </div>
 
                                     <div class="contentDiv" style="float: left">
@@ -120,18 +120,46 @@
 
     </div>
 </body>
-<script src="/ssm_Demo/static/dist/layui.all.js" type="text/javascript"></script>
-<script src="/ssm_Demo/static/jquery/jquery.min.js" type="text/javascript"></script>
+<script src="/ssm_Demo/static/dist/layui.js"></script>
 <script>
     //JavaScript代码区域
-    let element,carousel,form,table,laypage;
-        element = layui.element,
-        carousel = layui.carousel
-        ,form = layui.form
-        ,table  =layui.table
-        ,laypage= layui.laypage
+     let layer;
+     let $;
+     let layim;
+     layui.use('layim', function(){
+        layer=layui.layer;
+        $=layui.jquery;
+        layim = layui.layim;
+        layim.config({
+            init: {
+                url: '/ssm_Demo/webSocket/getList', //接口地址（返回的数据格式见下文）
+            } //获取主面板列表信息，下文会做进一步介绍
 
-    let layer2=layui.layer;
+
+            //上传图片接口（返回的数据格式见下文），若不开启图片上传，剔除该项即可
+            ,uploadImage: {
+                url: '' //接口地址
+                ,type: 'post' //默认post
+            }
+
+
+        });
+        let userId='${userId}';
+        let socket = new WebSocket('ws://192.168.8.48:8080/ssm_Demo/webSocket?userId='+userId);
+        layim.on('sendMessage', function(res){
+            //监听到上述消息后，就可以轻松地发送socket了，如：
+            socket.send(JSON.stringify({
+                type: 'chatMessage' //随便定义，用于在服务端区分消息类型
+                ,data: res
+            }));
+        });
+        socket.onmessage = function(res){
+            //接收到服务端发来的信息后进行解析，显示；
+            let data=JSON.parse(res.data);
+            layim.getMessage(data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
+        };
+    });
+
 
     let content='<div class="layui-form layui-form-pane" >  ' +
         '<div class="layui-form-item" style="margin-left: 10%"><label class="layui-form-label">回复主题：</label> <div class="layui-input-block"> <input type="text" name="title" id="title" required  lay-verify="required" placeholder="请输入标题" class="layui-input" style="width: 300px" value="${model.title}" readonly="readonly"> <input type="hidden" id="articleid" value="${model.id}"/>  </div> </div> ' +
@@ -140,8 +168,7 @@
 
 
     function reply(){
-        $("#title").val($("#biaoti").html());
-        layer2.open({
+        layer.open({
             type: 1,
             skin: 'layui-layer-molv',
             offset: 'auto',
@@ -171,11 +198,40 @@
         });
     }
 
+    function add(uid,name,avatar){
+        //实际使用时数据由动态获得
+        layim.add({
+            type: 'friend'
+            ,username: name
+            ,avatar: avatar
+            ,submit: function(group, remark, index){
+                layer.msg('好友申请已发送，请等待对方确认', {
+                    icon: 1
+                    ,shade: 0.5
+                }, function(){
+                    layer.close(index);
+                });
 
-    $(function(){
+                //通知对方
 
-    });
-
+                $.post('/im-applyFriend/', {
+                   uid: uid
+                  ,from_group: group
+                  ,remark: remark
+                }, function(res){
+                  if(res.status != 0){
+                    return layer.msg(res.msg);
+                  }
+                  layer.msg('好友申请已发送，请等待对方确认', {
+                    icon: 1
+                    ,shade: 0.5
+                  }, function(){
+                    layer.close(index);
+                  });
+                });
+            }
+        });
+    }
 
 </script>
 </html>
