@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -52,10 +53,13 @@ public class ArticleController {
 
 
     @GetMapping("/article.html")
-    public String articleHtml(@RequestParam("articleId")int articleId, Model model){
+    public String articleHtml(@RequestParam("articleId")int articleId, Model model, HttpSession session){
         //依据文章id，查询到文章内容
         Article article=articleService.getById(articleId);
         User auth=userMapper.selectById(article.getAuthId());
+        String status=auth.getStatus();
+        status=status.equals("online")?"在线":"离线";
+        auth.setStatus(status);
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("articleid",articleId);
         List<Message> messages=messageMapper.selectList(queryWrapper);
@@ -66,9 +70,14 @@ public class ArticleController {
             Message message= messages.get(i);
             int userId= message.getReplyid();
             User user=userMapper.selectById(userId);
+            status=user.getStatus();
+            status=status.equals("online")?"在线":"离线";
+            user.setStatus(status);
             message.setUser(user);
             messages.set(i,message);
         }
+        User user= (User) session.getAttribute("userInfo");
+        model.addAttribute("userId",user.getId());
         model.addAttribute("model",article);
         model.addAttribute("messages",messages);
         model.addAttribute("auth",auth);
