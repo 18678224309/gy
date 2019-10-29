@@ -2,9 +2,13 @@ package com.jtfu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import com.jtfu.config.MyWebSocketHander;
 import com.jtfu.entity.Group1;
+import com.jtfu.entity.Msgbox;
 import com.jtfu.entity.User;
 import com.jtfu.entity.UserGroup;
+import com.jtfu.mapper.MsgboxMapper;
+import com.jtfu.mapper.UserGroupMapper;
 import com.jtfu.service.IGroupService;
 import com.jtfu.service.IUserGroupService;
 import com.jtfu.service.IUserService;
@@ -12,10 +16,8 @@ import com.jtfu.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.socket.WebSocketSession;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
@@ -34,6 +36,11 @@ public class WebSocketController {
     @Autowired
     IGroupService groupService;
 
+    @Autowired
+    MsgboxMapper msgboxMapper;
+
+    @Autowired
+    UserGroupMapper userGroupMapper;
 
     @GetMapping("/layIm.html")
     public String layIm(Model model,HttpSession session){
@@ -105,4 +112,40 @@ public class WebSocketController {
     }
 
 
+    @PostMapping("/add")
+    @ResponseBody
+    public R add(@RequestParam int uid,@RequestParam String from_group,@RequestParam String remark,HttpSession session){
+        User user= (User) session.getAttribute("userInfo");
+        if(user==null||user.getId()==uid){
+            return R.error("未获取到用户信息！");
+        }
+        //查询当前用户的好友信息，避免重复添加
+        QueryWrapper userGroupWrapper=new QueryWrapper();
+        userGroupWrapper.eq("userid",uid);
+        List<UserGroup> list=userGroupMapper.selectList(userGroupWrapper);
+        for(int i=0;i<list.size();i++){
+            UserGroup userGroup=list.get(i);
+            String[] uids=userGroup.getUids().split(",");
+            for(int j=0;j<uids.length;j++){
+                if(uids[i].equals(user.getId().toString())){
+                    return R.error("已经添加好友，请勿重复添加！");
+                }
+            }
+        }
+         R r=R.success();
+        //接收到前端传来的添加请求后，保存至数据库未读消息
+        Msgbox msgbox=new Msgbox();
+        msgbox.setRemark(remark);
+        msgbox.setContent("请求添加你为好友！");
+        msgbox.setFrom(user.getId());
+        msgbox.setFrom_group(from_group);
+        msgbox.setHref("0");
+        msgbox.setRead("0");
+        msgbox.setStatus(0);
+        msgbox.setTime(new Date());
+        msgbox.setUid(uid);
+        msgboxMapper.insert(msgbox);
+        r.set("code",0);
+        return r;
+    }
 }

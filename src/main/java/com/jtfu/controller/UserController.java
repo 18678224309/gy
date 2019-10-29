@@ -51,10 +51,10 @@ public class UserController {
         qw.eq("username",uname);
         qw.eq("password",pwd);
         int res = userService.count(qw);
-        User user = userService.getOne(qw);
-        user.setStatus("online");
-        boolean isOnline =  userService.updateById(user);
-        if(res == 1 && isOnline == true){
+        if(res == 1){
+            User user = userService.getOne(qw);
+            user.setStatus("online");
+            userService.updateById(user);
             session.setAttribute("userInfo",user);
         }
         return res;

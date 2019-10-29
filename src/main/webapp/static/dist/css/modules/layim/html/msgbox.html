@@ -27,20 +27,16 @@
 
 <ul class="layim-msgbox" id="LAY_view"></ul>
 
-<div style="margin: 0 15px;">
-  <blockquote class="layui-elem-quote">注意：这些都是模拟数据，实际使用时，需将其中的模拟接口改为你的项目真实接口。
-  <br>该模版文件所在目录（相对于layui.js）：/css/modules/layim/html/msgbox.html</blockquote>
-</div>
 
 <textarea title="消息模版" id="LAY_tpl" style="display:none;">
 {{# layui.each(d.data, function(index, item){
   if(item.from){ }}
     <li data-uid="{{ item.from }}" data-fromGroup="{{ item.from_group }}">
-      <a href="/u/{{ item.from }}/" target="_blank">
+      <a href="javaScript:void(0)">
         <img src="{{ item.user.avatar }}" class="layui-circle layim-msgbox-avatar">
       </a>
       <p class="layim-msgbox-user">
-        <a href="/u/{{ item.from }}/" target="_blank">{{ item.user.username||'' }}</a>
+        <a href="javaScript:void(0)">{{ item.user.username||'' }}</a>
         <span>{{ item.time }}</span>
       </p>
       <p class="layim-msgbox-content">
@@ -67,7 +63,16 @@
 
 <script src="../../../../layui.js?v=1"></script>
 <script>
-layui.use(['layim', 'flow'], function(){
+
+  function getQueryString(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return unescape(r[2]);
+    return null;
+  }
+
+
+  layui.use(['layim', 'flow'], function(){
   var layim = layui.layim
   ,layer = layui.layer
   ,laytpl = layui.laytpl
@@ -76,23 +81,23 @@ layui.use(['layim', 'flow'], function(){
 
   var cache = {}; //用于临时记录请求到的数据
 
+    //由主页面传递的userid
+  var userId=getQueryString("userId");
+
   //请求消息
   var renderMsg = function(page, callback){
-    
     //实际部署时，请将下述 getmsg.json 改为你的接口地址
-    
-    $.get('getmsg.json', {
-      page: page || 1
+    $.get('/ssm_Demo/msgbox/getMsgboxByUid', {
+      page:1,
+      uid:userId
     }, function(res){
       if(res.code != 0){
         return layer.msg(res.msg);
       }
-
       //记录来源用户信息
       layui.each(res.data, function(index, item){
         cache[item.from] = item.user;
       });
-
       callback && callback(res.data, res.pages);
     });
   };
@@ -114,12 +119,9 @@ layui.use(['layim', 'flow'], function(){
   });
 
   //打开页面即把消息标记为已读
-  /*
-  $.post('/message/read', {
-    type: 1
+  $.get('/ssm_Demo/msgbox/yd', {
+    uid: userId
   });
-  */
-
   //操作
   var active = {
     //同意
@@ -183,12 +185,12 @@ layui.use(['layim', 'flow'], function(){
     ,refuse: function(othis){
       var li = othis.parents('li')
       ,uid = li.data('uid');
-
       layer.confirm('确定拒绝吗？', function(index){
-        $.post('/im/refuseFriend', {
-          uid: uid //对方用户ID
+        $.post('/ssm_Demo/msgbox/refuse', {
+          uid: uid, //对方用户ID
+          from: userId //自己的用户id
         }, function(res){
-          if(res.code != 0){
+          if(res.code != 200){
             return layer.msg(res.msg);
           }
           layer.close(index);
@@ -203,6 +205,9 @@ layui.use(['layim', 'flow'], function(){
     active[type] ? active[type].call(this, othis) : '';
   });
 });
+
+
+
 </script>
 </body>
 </html>

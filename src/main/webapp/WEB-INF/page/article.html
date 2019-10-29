@@ -83,12 +83,13 @@
         <div class="layui-body" >
                 <div class="masterDiv" >
                     <div class="imgDiv" style="float: left">
-                        <img src="${auth.avatar}" style="margin-top: 2%;width: 150px;height: 150px;"></br></br></br></br>
+                        <img src="${auth.avatar}" style="margin-top: 32%;width: 100%;height:  100%;"></br></br></br></br>
                         <label onclick="add('${auth.id}','${auth.name}','${auth.avatar}')"><a href="javaScript:void(0)">${auth.name}：${auth.status}</a></label>
                     </div>
 
                      <div class="contentDiv" style="float: left">
                            <h2 style="border-bottom: 1px dashed #a3c59a;position:relative;padding-top: 10px">${model.title}</h2>
+                           <h3 style="margin-left: 2%">筹集金额：${model.money},当前筹集：100</h3>
                             <div style="margin-top: 30px;margin-left: 5%">
                                 ${model.describe}
                             </div>
@@ -101,7 +102,7 @@
                 <#list messages as message>
                             <div class="masterDiv" >
                                     <div class="imgDiv" style="float: left">
-                                        <img src="${message.user.avatar}" style="margin-top: 2%;width: 150px;height: 150px;"></br></br></br></br>
+                                        <img src="${message.user.avatar}" style="margin-top: 32%;width: 100%;height:  100%;"></br></br></br></br>
                                         <label onclick="add()"><a href="javaScript:void(0)">${message.user.name}：${message.user.status}</a></label>
                                     </div>
 
@@ -126,6 +127,7 @@
      let layer;
      let $;
      let layim;
+     let userId='${userId}';
      layui.use('layim', function(){
         layer=layui.layer;
         $=layui.jquery;
@@ -141,11 +143,10 @@
                 url: '' //接口地址
                 ,type: 'post' //默认post
             }
-
-
+            ,msgbox: '/ssm_Demo/static/dist/css/modules/layim/html/msgbox.html?userId='+userId //消息盒子页面地址，若不开启，剔除该项即可
         });
-        let userId='${userId}';
-        let socket = new WebSocket('ws://192.168.8.48:8080/ssm_Demo/webSocket?userId='+userId);
+
+        let socket = new WebSocket('ws://127.0.0.1:8080/ssm_Demo/webSocket?userId='+userId);
         layim.on('sendMessage', function(res){
             //监听到上述消息后，就可以轻松地发送socket了，如：
             socket.send(JSON.stringify({
@@ -158,6 +159,17 @@
             let data=JSON.parse(res.data);
             layim.getMessage(data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
         };
+
+         //监听layim建立就绪 获得未读取的消息;
+         layim.on('ready', function(res){
+            setInterval(function(){
+                $.get('/ssm_Demo/msgbox/getMsgCount',{uid:userId},function(res){
+                    if(res>0){
+                        layim.msgbox(res);
+                    }
+                });
+            },1000*2)
+         });
     });
 
 
@@ -205,29 +217,22 @@
             ,username: name
             ,avatar: avatar
             ,submit: function(group, remark, index){
-                layer.msg('好友申请已发送，请等待对方确认', {
-                    icon: 1
-                    ,shade: 0.5
-                }, function(){
-                    layer.close(index);
-                });
-
                 //通知对方
-
-                $.post('/im-applyFriend/', {
-                   uid: uid
-                  ,from_group: group
-                  ,remark: remark
+                $.post('/ssm_Demo/webSocket/add', {
+                    uid: uid
+                    ,from_group: group
+                    ,remark: remark
                 }, function(res){
-                  if(res.status != 0){
-                    return layer.msg(res.msg);
-                  }
-                  layer.msg('好友申请已发送，请等待对方确认', {
-                    icon: 1
-                    ,shade: 0.5
-                  }, function(){
-                    layer.close(index);
-                  });
+                    if(res.code != 0){
+                        return layer.msg(res.msg);
+                    }else{
+                        layer.msg('好友申请已发送，请等待对方确认', {
+                            icon: 1
+                            ,shade: 0.5
+                        }, function(){
+                            layer.close(index);
+                        });
+                    }
                 });
             }
         });

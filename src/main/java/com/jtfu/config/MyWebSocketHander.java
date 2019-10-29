@@ -16,7 +16,7 @@ import java.util.*;
 @Component
 public class MyWebSocketHander implements WebSocketHandler {
     /*private final static List<WebSocketSession> USERS=new ArrayList<>();*/
-    private final static Map<String,WebSocketSession> USER_ONLINE=new HashMap<>();
+    public final static Map<String,WebSocketSession> USER_ONLINE=new HashMap<>();
 
     @Autowired
     IUserService userService;
