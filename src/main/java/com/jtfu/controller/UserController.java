@@ -40,11 +40,6 @@ public class UserController {
         user.setUsername(username);
         user.setPassword(pwd);
         user.setPhone(phone);
-        user.setStatus("online");
-        user.setSign("在深邃的编码世界，做一枚轻盈的纸飞机");
-        user.setAvatar("http://img1.xcarimg.com/motonews/24455/32021/32049/20180906172744162560010864435.jpg");
-        user.setAge(0);
-        user.setSex("1");
         boolean res = userService.save(user);
         return res;
     }
@@ -56,11 +51,12 @@ public class UserController {
         qw.eq("username",uname);
         qw.eq("password",pwd);
         int res = userService.count(qw);
-        if(res == 1){
-            User user = userService.getOne(qw);
+        User user = userService.getOne(qw);
+        user.setStatus("online");
+        boolean isOnline =  userService.updateById(user);
+        if(res == 1 && isOnline == true){
             session.setAttribute("userInfo",user);
         }
-        System.out.println(res+"=--------------------------");
         return res;
     }
 
@@ -72,7 +68,6 @@ public class UserController {
             QueryWrapper qw = new QueryWrapper();
             qw.eq("username",uname);
             int res = userService.count(qw);
-            System.out.println(res+"------------------------------");
             if(res == 0){
                 return 1;
             }else{
@@ -89,7 +84,6 @@ public class UserController {
             QueryWrapper qw = new QueryWrapper();
             qw.eq("phone",phone);
             int res = userService.count(qw);
-            System.out.println(res+"------------------------------");
             if(res == 0){
                 return 2;
             }else{
@@ -101,8 +95,25 @@ public class UserController {
     }
 
     //退出登录
-    @RequestMapping("/ouLogin")
-    public void outLogin(HttpSession session){
+    @RequestMapping("/outLogin")
+    public int outLogin(HttpSession session,User user){
+        user = (User)session.getAttribute("userInfo");
+        //修改登陆状态
+        user.setStatus("offline");
+        QueryWrapper qw = new QueryWrapper();
+        boolean isOffline = userService.updateById(user);
         session.removeAttribute("userInfo");
+        if(session.getAttribute("userInfo")==null && isOffline == true){
+            return 1;
+        }
+        return 0;
     }
+
+    //完善个人信息
+    @RequestMapping("/perfectInfo")
+    public int perfectInfo(){
+
+        return 0;
+    }
+
 }

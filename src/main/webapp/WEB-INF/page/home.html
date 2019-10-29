@@ -67,11 +67,11 @@
                     纸飞机
                 </a>
                 <dl class="layui-nav-child">
-                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="javascript:void(0);" onclick="perfectInfo()">基本资料</a></dd>
                     <dd><a href="">修改密码</a></dd>
                 </dl>
             </li>
-            <li class="layui-nav-item"><a href="javascript:void(0);" onclick="">退出</a></li>
+            <li class="layui-nav-item"><a href="javascript:void(0);" onclick="outLogin()">退出</a></li>
         </ul>
     </div>
     <div class="layui-body" >
@@ -259,11 +259,29 @@
             async: true,
             data:"",
             success: function(data) {
+                console.log("data");
                 location.href = "index.html";
             },
             type: "post",
             dataType: "json"
         })
+    }
+
+    //完善个人信息
+    function perfectInfo(){
+        // $.ajax({
+        //     url: "user/perfectInfo",
+        //     async: true,
+        //     data:"",
+        //     success: function(data) {
+        //         console.log("data");
+        //         location.href = "index.html";
+        //     },
+        //     type: "post",
+        //     dataType: "json"
+        // })
+        //调出弹出层
+
     }
 
     //点击筹集按钮后的相应窗口
