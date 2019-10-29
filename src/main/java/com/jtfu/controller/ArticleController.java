@@ -4,20 +4,24 @@ package com.jtfu.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jtfu.entity.Article;
+import com.jtfu.entity.Message;
+import com.jtfu.entity.User;
+import com.jtfu.mapper.MessageMapper;
+import com.jtfu.mapper.UserMapper;
 import com.jtfu.service.IArticleService;
 import com.jtfu.util.R;
 import com.sun.corba.se.spi.orbutil.threadpool.WorkQueue;
 import com.sun.org.apache.regexp.internal.RE;
+import org.apache.ibatis.reflection.ArrayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -27,10 +31,15 @@ public class ArticleController {
 
     @Autowired
     IArticleService articleService;
+    @Autowired
+    MessageMapper messageMapper;
+    @Autowired
+    UserMapper userMapper;
 
     @PostMapping("/uoloadImg")
     @ResponseBody
     public R uoloadImg(@RequestPart("photos") MultipartFile photos,@RequestParam("url") String url, HttpServletRequest request) throws Exception {
+        //当图片上传时会利用拿到的唯一key值作为文件夹，上传的图片存在这个文件夹中
         String pathName=url+"/"+photos.getOriginalFilename();
         System.err.println(pathName);
         File file=new File(pathName);
@@ -41,9 +50,35 @@ public class ArticleController {
         return R.success();
     }
 
+
+    @GetMapping("/article.html")
+    public String articleHtml(@RequestParam("articleId")int articleId, Model model){
+        //依据文章id，查询到文章内容
+        Article article=articleService.getById(articleId);
+        User auth=userMapper.selectById(article.getAuthId());
+        QueryWrapper queryWrapper=new QueryWrapper();
+        queryWrapper.eq("articleid",articleId);
+        List<Message> messages=messageMapper.selectList(queryWrapper);
+        //将图片进行拆分
+        article.setPhotoPath(article.getPhotos().split(","));
+        //循环回复信息，拿到回复的用户信息
+        for(int i=0;i<messages.size();i++){
+            Message message= messages.get(i);
+            int userId= message.getReplyid();
+            User user=userMapper.selectById(userId);
+            message.setUser(user);
+            messages.set(i,message);
+        }
+        model.addAttribute("model",article);
+        model.addAttribute("messages",messages);
+        model.addAttribute("auth",auth);
+        return "article";
+    }
+
     @PostMapping("/genKey")
     @ResponseBody
     public R genKey(HttpServletRequest request){
+        //在前端进行图片上传时，选定图片就已经上传了，此时需要与正在输入的数据绑定，所以返回一个唯一的key值；
         String uuid=UUID.randomUUID().toString();
         String staticPath=request.getRealPath("static");
         String path=staticPath+"\\image\\"+uuid;
@@ -57,13 +92,22 @@ public class ArticleController {
     @PostMapping("/saveArticle")
     @ResponseBody
     public R saveArticle(String title,String describe,int money,String urlPath){
+        //保存数据接口，接收标题，描述，筹集金额，上传图片的地址;
         Article article=new Article();
         article.setTitle(title);
         article.setAuth("取Session用户名");
         article.setAuthId(0);
         article.setMoney(money);
         article.setDescribe(describe);
-        article.setPhotos(urlPath);
+        File file=new File(urlPath);
+        File[] files=file.listFiles();
+        StringBuilder builder=new StringBuilder();
+        String imgPath=urlPath.substring(urlPath.indexOf("\\static"),urlPath.length());
+        Arrays.stream(files).forEach(f->{
+            builder.append(imgPath+"\\"+f.getName());
+            builder.append(",");
+        });
+        article.setPhotos(builder.toString());
         article.setCreatetime(new Date());
         article.setStatus(1);
         articleService.save(article);
@@ -106,6 +150,7 @@ public class ArticleController {
     @PostMapping("/getSlideShow")
     @ResponseBody
     public R getSlideShow(){
+        //获取轮播图，取前五条数据的第一张图片作为轮播图片;
         QueryWrapper wrapper=new QueryWrapper();
         wrapper.eq("status",1);
         wrapper.isNotNull("photos");
@@ -115,12 +160,12 @@ public class ArticleController {
         if(list.size()>5){
             list.subList(0,5);
         }
+
         for (int i=0;i<list.size();i++){
             Article article=list.get(i);
-            String photoDir= article.getPhotos();
-            File file=new File(photoDir);
-            File[] files= file.listFiles();
-            article.setPhotos(photoDir.substring(photoDir.indexOf("static"),photoDir.length())+"\\"+files[0].getName());
+            String photos= article.getPhotos();
+            String[] photo=photos.split(",");
+            article.setPhotos(photo[0]);
             list.set(i,article);
         }
 

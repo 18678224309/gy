@@ -1,7 +1,12 @@
 package com.jtfu.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -14,18 +19,29 @@ import java.io.Serializable;
 public class Message implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private Integer initiator;
+    private Integer articleid;
 
-    private Integer recipient;
+    private Integer replyid;
 
     private String message;
 
-    private LocalDateTime createtime;
+    private Date createtime;
 
-    private LocalDateTime updatetime;
+    private Date updatetime;
+
+    @TableField(exist = false)
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public Integer getId() {
         return id;
@@ -34,20 +50,23 @@ public class Message implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-    public Integer getInitiator() {
-        return initiator;
+
+    public Integer getArticleid() {
+        return articleid;
     }
 
-    public void setInitiator(Integer initiator) {
-        this.initiator = initiator;
-    }
-    public Integer getRecipient() {
-        return recipient;
+    public void setArticleid(Integer articleid) {
+        this.articleid = articleid;
     }
 
-    public void setRecipient(Integer recipient) {
-        this.recipient = recipient;
+    public Integer getReplyid() {
+        return replyid;
     }
+
+    public void setReplyid(Integer replyid) {
+        this.replyid = replyid;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -55,30 +74,20 @@ public class Message implements Serializable {
     public void setMessage(String message) {
         this.message = message;
     }
-    public LocalDateTime getCreatetime() {
+    public Date getCreatetime() {
         return createtime;
     }
 
-    public void setCreatetime(LocalDateTime createtime) {
+    public void setCreatetime(Date createtime) {
         this.createtime = createtime;
     }
-    public LocalDateTime getUpdatetime() {
+    public Date getUpdatetime() {
         return updatetime;
     }
 
-    public void setUpdatetime(LocalDateTime updatetime) {
+    public void setUpdatetime(Date updatetime) {
         this.updatetime = updatetime;
     }
 
-    @Override
-    public String toString() {
-        return "Message{" +
-            "id=" + id +
-            ", initiator=" + initiator +
-            ", recipient=" + recipient +
-            ", message=" + message +
-            ", createtime=" + createtime +
-            ", updatetime=" + updatetime +
-        "}";
-    }
+
 }

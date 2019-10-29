@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -42,7 +44,16 @@ public class Article implements Serializable {
 
     private Integer status;
 
+    @TableField(exist = false)
+    private String[] photoPath;
 
+    public String[] getPhotoPath() {
+        return photoPath;
+    }
+
+    public void setPhotoPath(String[] photoPath) {
+        this.photoPath = photoPath;
+    }
 
     public Integer getStatus() {
         return status;

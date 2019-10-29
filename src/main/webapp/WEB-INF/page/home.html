@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="static/dist/css/layui.css">
     <style>
         html{
             width: 100%;
@@ -51,6 +50,7 @@
             height: 100px;
         }
     </style>
+    <link rel="stylesheet" href="/ssm_Demo/static/dist/css/layui.css">
 </head>
 <body>
 <div class="layui-layout layui-layout-admin">
@@ -74,7 +74,6 @@
             <li class="layui-nav-item"><a href="javascript:void(0);" onclick="">退出</a></li>
         </ul>
     </div>
-
     <div class="layui-body" >
         <div style="width: 48%;height: 48%;border: 2px solid #B5B5B5;float: left;margin-left: 1%" id="carouselDiv">
             <div class="layui-carousel" id="carousel" lay-filter="carousel">
@@ -85,7 +84,7 @@
 
         <div style="width: 48%;height: 48%;border: 2px solid #B5B5B5;float: left;margin-left: 2%" id="undoneDiv">
             <div class="layui-tab layui-tab-card">
-                <ul class="layui-tab-title" style="margin-top: -10px">
+                <ul class="layui-tab-title" >
                     <li class="layui-this">公益列表</li>
                     <!-- <li>用户管理</li>
                      <li>权限分配</li>
@@ -117,28 +116,36 @@
     </div>
 
 </div>
-
-
-
 </body>
-<script src="static/dist/layui.js" type="text/javascript"></script>
-<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+<script src="/ssm_Demo/static/dist/layui.all.js" type="text/javascript"></script>
+<script src="/ssm_Demo/static/jquery/jquery.min.js" type="text/javascript"></script>
 <script>
     //JavaScript代码区域
-    var tabWindowHeight=0;
-    var element,carousel,form,table,laypage,layer,upload;
+    let tabWindowHeight=0;
+    let element,carousel,form,table,laypage;
+         element = layui.element,
+         carousel = layui.carousel
+        ,form = layui.form
+        ,table  =layui.table
+        ,laypage= layui.laypage
+    let layer=layui.layer;
+    let upload=layui.upload;
 
+    let content='<div class="layui-form layui-form-pane" >  ' +
+        '<div class="layui-form-item" style="margin-left: 10%"><label class="layui-form-label">请输入：</label> <div class="layui-input-block"> <input type="number" name="money" id="money" required  lay-verify="required" placeholder="请输入金额" class="layui-input" style="width: 300px" oninput="changeIntValue(this)"> </div> </div> ' +
+        '<div class="layui-form-item" style="margin-left: 10%"><label class="layui-form-label">标题：</label> <div class="layui-input-block"> <input type="text" name="title" id="title" required  lay-verify="required" placeholder="请输入标题" class="layui-input" style="width: 300px" oninput="changeIntValue(this)"> </div> </div> ' +
+        '<div class="layui-form-item layui-form-text" style="margin-left: 10%"><label class="layui-form-label" style="width: 80%">描述：</label> <div class="layui-input-block"> <textarea name="describe" id="describe" placeholder="请输入内容" class="layui-textarea" style="width: 80%"></textarea> </div> </div> ' +
+        '<div class="layui-form-item layui-form-text" style="margin-left: 10%">   ' +
+        '       <div class="layui-upload">\n' +
+        '            <button type="button" class="layui-btn" id="test2">多图片上传</button>\n' +
+        '           <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;"> 预览图：\n' +
+        '                <div class="layui-upload-list" id="demo2"></div>\n' +
+        '            </blockquote>\n' +
+        '        </div></div> ' +
+        '</div>'
 
-    layui.use(['carousel', 'form','element','table','laypage','upload'], function(){
-        element = layui.element,
-            carousel = layui.carousel
-            ,form = layui.form
-            ,table  =layui.table
-            ,laypage= layui.laypage
-            ,layer=layui.layer
-            ,upload=layui.upload;
-
-
+    //初始化页面，加载数据
+    function init(){
         $.post('article/getList',{status:1,curr:1,limit:5},function(res){
             //console.log(res);
             drawTable("#table1",res.page.records);
@@ -175,7 +182,7 @@
         $.post("article/getSlideShow",{},function(res){
             let SlideShow=res.SlideShow;
             for (let i=0;i<SlideShow.length;i++){
-                $("#carousel_item").append("<div ><img src='"+SlideShow[i].photos+"' style='cursor:pointer;width: 100%;height: 100%;' onclick='goDetilPage("+SlideShow[i].id+")'> </div>");
+                $("#carousel_item").append("<div ><img src='/ssm_Demo/"+SlideShow[i].photos+"' style='cursor:pointer;width: 100%;height: 100%;' onclick='goDetilPage("+SlideShow[i].id+")'> </div>");
             }
             //常规轮播
             carousel.render({
@@ -185,23 +192,9 @@
                 ,width:'100%'
             });
         });
-    });
+    }
 
-
-
-    var content='<div class="layui-form layui-form-pane" >  ' +
-        '<div class="layui-form-item" style="margin-left: 10%"><label class="layui-form-label">请输入：</label> <div class="layui-input-block"> <input type="number" name="money" id="money" required  lay-verify="required" placeholder="请输入金额" class="layui-input" style="width: 300px" oninput="changeIntValue(this)"> </div> </div> ' +
-        '<div class="layui-form-item" style="margin-left: 10%"><label class="layui-form-label">标题：</label> <div class="layui-input-block"> <input type="text" name="title" id="title" required  lay-verify="required" placeholder="请输入标题" class="layui-input" style="width: 300px" oninput="changeIntValue(this)"> </div> </div> ' +
-        '<div class="layui-form-item layui-form-text" style="margin-left: 10%"><label class="layui-form-label" style="width: 80%">描述：</label> <div class="layui-input-block"> <textarea name="describe" id="describe" placeholder="请输入内容" class="layui-textarea" style="width: 80%"></textarea> </div> </div> ' +
-        '<div class="layui-form-item layui-form-text" style="margin-left: 10%">   ' +
-        '       <div class="layui-upload">\n' +
-        '            <button type="button" class="layui-btn" id="test2">多图片上传</button>\n' +
-        '           <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;"> 预览图：\n' +
-        '                <div class="layui-upload-list" id="demo2"></div>\n' +
-        '            </blockquote>\n' +
-        '        </div></div> ' +
-        '</div>'
-
+    //监听变淡数据，标题和筹款金额
     function changeIntValue(item){
          let lableId=$(item).attr("id");
          let value=$(item).val();
@@ -219,7 +212,7 @@
     }
 
 
-
+    //请求列表数据
     function getList(item){
         let returnVal;
         $.ajax({
@@ -230,91 +223,33 @@
         return returnVal;
     }
 
+    //请求返回数据后绘制表格
     function drawTable(tableId,data){
         $(tableId).html("");
+        let tableTd="[待筹款]";
+        if(tableId==="table2"){tableTd="[已完结]";}
         for(let i=0;i<data.length;i++){
-            let tr="<tr onclick='goDetilPage("+data[i].id+")'><td class='table_fl'>[待筹款]</td> <td class='table_bt'>"+data[i].title+"</td> <td class='table_zz'>"+data[i].auth+"</td> <td class='table_sj'>"+data[i].createtime+"</td></tr>"
+            let tr="<tr onclick='goDetilPage("+data[i].id+")'><td class='table_fl'>"+tableTd+"</td><td class='table_bt'>"+data[i].title+"</td> <td class='table_zz'>"+data[i].auth+"</td> <td class='table_sj'>"+data[i].createtime+"</td></tr>"
             $(tableId).append(tr);
         }
     }
 
-    function startCj(){
-        $("#urlPath").val("");
-        layer.open({
-            type: 1,
-            skin: 'layui-layer-molv',
-            offset: 'auto',
-            area: ['600px', '500px'],
-            btn: ['确认', '取消',],
-            btnAlign:'c',
-            resize:false,
-            content: content //这里content是一个普通的String
-            ,yes: function(index, layero){
-                    var money=$("#money").val();
-                    var title=$("#title").val();
-                    var describe=$("#describe").val();
-                    var urlPath=$("#urlPath").val();
-                    $.post("article/saveArticle",{money:money,title:title,describe:describe,urlPath:urlPath},function(res){
-                        if(res.code==200){
-                            alert(res.msg);
-                            layer.close(index);
-                        }
-                    });
-            }
-            ,btn2: function(index, layero){
-                //按钮【按钮二】的回调
-                $.post("article/removeImg",{url:$('#urlPath').val()},function(res){
-                    console.log(res);
-                });
-                //return false 开启该代码可禁止点击该按钮关闭
-            }
-            ,cancel: function(){
-                //右上角关闭回调
-                //return false; 开启该代码可禁止点击该按钮关闭
-            },
-        });
 
-        //多图片上传
-        upload.render({
-            elem: '#test2'
-            ,url: 'article/uoloadImg'
-            ,multiple: true
-            ,accept:'images'
-            ,acceptMime: 'image/*'
-            ,field:'photos'
-            ,data:{url:function(){
-                    return $("#urlPath").val();
-                }}
-            ,before: function(obj){
-                let urlPathVal=$("#urlPath").val();
-                if(urlPathVal===""){
-                    $.ajax({
-                        url:'article/genKey',async:false,type:"POST",success:function(res){
-                            $("#urlPath").val(res.key);
-
-                        }
-                    });
-                }
-                //预读本地文件示例，不支持ie8
-                obj.preview(function(index, file, result){
-                    $('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img">')
-                });
-            }
-        });
-    }
-
+    //初始化
     $(function(){
-        var undoneDivHeight=$("#undoneDiv").css("height");
+        let undoneDivHeight=$("#undoneDiv").css("height");
         undoneDivHeight=undoneDivHeight.substring(0,undoneDivHeight.length-2);
-        var tabTileHeight=$(".layui-tab-title").css("height");
+        let tabTileHeight=$(".layui-tab-title").css("height");
         tabTileHeight=tabTileHeight.substring(0,tabTileHeight.length-2);
         tabWindowHeight=undoneDivHeight -tabTileHeight-30;
         $(".layui-tab-content").css("height",tabWindowHeight);
         $("#table1").css("height",tabWindowHeight-40);
+        init();
     });
 
+    //转到详细页面
     function goDetilPage(articleId){
-        alert(articleId);
+        window.location.href="article/article.html?articleId="+articleId;
     }
 
     //退出登录
@@ -329,6 +264,72 @@
             type: "post",
             dataType: "json"
         })
+    }
+
+    //点击筹集按钮后的相应窗口
+    function startCj(){
+        $("#urlPath").val("");
+         layer.open({
+             type: 1,
+             skin: 'layui-layer-molv',
+             offset: 'auto',
+             area: ['600px', '500px'],
+             btn: ['确认', '取消',],
+             btnAlign:'c',
+             resize:false,
+             content: content //这里content是一个普通的String
+             ,yes: function(index, layero){
+                 var money=$("#money").val();
+                 var title=$("#title").val();
+                 var describe=$("#describe").val();
+                 var urlPath=$("#urlPath").val();
+                 $.post("article/saveArticle",{money:money,title:title,describe:describe,urlPath:urlPath},function(res){
+                     if(res.code==200){
+                         alert(res.msg);
+                         layer.close(index);
+                     }
+                 });
+             }
+             ,btn2: function(index, layero){
+                 //按钮【按钮二】的回调
+                 $.post("article/removeImg",{url:$('#urlPath').val()},function(res){
+                     console.log(res);
+                 });
+                 //return false 开启该代码可禁止点击该按钮关闭
+             }
+             ,cancel: function(){
+                 //右上角关闭回调
+                 //return false; 开启该代码可禁止点击该按钮关闭
+             },
+         });
+
+         //多图片上传
+         upload.render({
+             elem: '#test2'
+             ,url: 'article/uoloadImg'
+             ,multiple: true
+             ,accept:'images'
+             ,acceptMime: 'image/*'
+             ,field:'photos'
+             ,data:{url:function(){
+                     return $("#urlPath").val();
+                 }}
+             ,before: function(obj){
+                 let urlPathVal=$("#urlPath").val();
+                 if(urlPathVal===""){
+                     $.ajax({
+                         url:'article/genKey',async:false,type:"POST",success:function(res){
+                             $("#urlPath").val(res.key);
+
+                         }
+                     });
+                 }
+                 //预读本地文件示例，不支持ie8
+                 obj.preview(function(index, file, result){
+                     $('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img">')
+                 });
+             }
+         });
     }
 
 </script>
