@@ -64,6 +64,14 @@ public class WebSocketController {
         QueryWrapper userGroupW=new QueryWrapper();
         userGroupW.eq("userid",user.getId());
         List<UserGroup> userGroups=userGroupService.list(userGroupW);
+        if(userGroups.size()==0){
+            //一个分组都没有时，创建一个默认分组；
+            UserGroup userGroup=new UserGroup();
+            userGroup.setUids("");
+            userGroup.setUserid(user.getId());
+            userGroup.setGroupid(1);
+            userGroupService.save(userGroup);
+        }
         Set groupIds=new HashSet();
         Map<Integer,String> group_users=new HashMap();
         userGroups.stream().forEach(s->{

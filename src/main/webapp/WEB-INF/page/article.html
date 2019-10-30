@@ -16,9 +16,6 @@
             padding: 0;
             background-color: #F7F8F5;
         }
-        .layui-layout-admin .layui-header{
-            height: 80px;
-        }
         .layui-layout-admin .layui-body{
             top: 80px;
             width: 80%;
@@ -33,16 +30,17 @@
             cursor:pointer;
         }
         .imgDiv{
-            width: 15%;
-            min-height: 350px;
+            width: 20%;
+            min-height: 100%;
             text-align: center;
+            border: 1px solid rebeccapurple;
         }
         .contentDiv{
-            width: 83%;
-            min-height: 350px;
+            width: 70%;
+            min-height: 100%;
         }
         .layui-body div{
-            margin-top: 1%;
+
         }
         .layui-btn{
            float: right;
@@ -54,61 +52,21 @@
 
     <div class="layui-layout layui-layout-admin">
         <div class="layui-header">
-            <div class="layui-logo" style="letter-spacing: 5px">
-                安心筹
-            </div>
-
             <ul class="layui-nav layui-layout-right">
                 <!--<li class="layui-nav-item"><a href="javaScript:void (0)" onclick="startCj()">发起筹集</a></li>-->
                 <li class="layui-nav-item">
                     <a href="javascript:;">
-                        <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
-                        纸飞机
+                        <#if (Session.userInfo)??>
+                        <img src="${Session.userInfo.avatar}" class="layui-nav-img">
+                        ${Session.userInfo.name}
+                    </#if>
                     </a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="">基本资料</a></dd>
-                        <dd><a href="">修改密码</a></dd>
-                    </dl>
                 </li>
-                <li class="layui-nav-item"><a href="javascript:void(0);" onclick="">退出</a></li>
+                <li class="layui-nav-item"><a href="javascript:void(0);" onclick="outLogin()">退出</a></li>
             </ul>
         </div>
 
-        <div class="layui-body" >
-                <div class="masterDiv" >
-                    <div class="imgDiv" style="float: left">
-                        <img src="${auth.avatar}" style="margin-top: 32%;width: 100%;height:  100%;"></br></br></br></br>
-                        <label onclick="add('${auth.id}','${auth.name}','${auth.avatar}')"><a href="javaScript:void(0)">${auth.name}：${auth.status}</a></label>
-                    </div>
-
-                     <div class="contentDiv" style="float: left">
-                           <h2 style="border-bottom: 1px dashed #a3c59a;position:relative;padding-top: 10px">${model.title}</h2>
-                           <h3 style="margin-left: 2%">筹集金额：${model.money},当前筹集：${model.moneynow}</h3>
-                            <div style="margin-top: 30px;margin-left: 5%">
-                                ${model.describe}
-                            </div>
-                            <#list model.photoPath as path>
-                                <img src="/ssm_Demo${path}" style="width: 80%;height: 500px;margin-left: 5%;margin-top: 2%">
-                            </#list>
-
-                     </div>
-                </div>
-                <#list messages as message>
-                            <div class="masterDiv" >
-                                    <div class="imgDiv" style="float: left">
-                                        <img src="${message.user.avatar}" style="margin-top: 32%;width: 100%;height:  100%;"></br></br></br></br>
-                                        <label onclick="add('${message.user.id}','${message.user.name}','${message.user.avatar}')"><a href="javaScript:void(0)">${message.user.name}：${message.user.status}</a></label>
-                                    </div>
-
-                                    <div class="contentDiv" style="float: left">
-                                        <h4 style="border-bottom: 1px dashed #a3c59a;position:relative;padding-top: 10px">回复信息：</h4>
-                                        <div style="margin-top: 30px;margin-left: 5%">
-                                            ${message.message}
-                                        </div>
-                                </div>
-                            </div>
-                </#list>
-                    <button type="button" class="layui-btn" onclick="reply()"><i class="layui-icon">我要回复</i></button>
+        <div style="width: 80%;border: 1px solid black; margin-right: auto;margin-left: auto">
 
         </div>
 
@@ -121,7 +79,7 @@
      let layer;
      let $;
      let layim;
-     let userId='${userId}';
+     let userId='${userInfo.id!""}';
      layui.use('layim', function(){
         layer=layui.layer;
         $=layui.jquery;
@@ -241,5 +199,19 @@
         });
     }
 
+    //退出登录
+    function outLogin(){
+        $.ajax({
+            url: "/ssm_Demo/user/outLogin",
+            async: true,
+            data:"",
+            success: function(data) {
+                console.log("data");
+                location.href = "/ssm_Demo/index.html";
+            },
+            type: "post",
+            dataType: "json"
+        })
+    }
 </script>
 </html>

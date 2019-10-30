@@ -74,7 +74,7 @@ public class ArticleController {
             messages.set(i,message);
         }
         User user= (User) session.getAttribute("userInfo");
-        model.addAttribute("userId",user.getId());
+        model.addAttribute("userInfo",user);
         model.addAttribute("model",article);
         model.addAttribute("messages",messages);
         model.addAttribute("auth",auth);
@@ -97,12 +97,13 @@ public class ArticleController {
 
     @PostMapping("/saveArticle")
     @ResponseBody
-    public R saveArticle(String title,String describe,int money,String urlPath){
+    public R saveArticle(String title,String describe,int money,String urlPath,HttpSession session){
+        User user= (User) session.getAttribute("userInfo");
         //保存数据接口，接收标题，描述，筹集金额，上传图片的地址;
         Article article=new Article();
         article.setTitle(title);
-        article.setAuth("取Session用户名");
-        article.setAuthId(0);
+        article.setAuth(user.getName());
+        article.setAuthId(user.getId());
         article.setMoney(money);
         article.setDescribe(describe);
         File file=new File(urlPath);
@@ -164,7 +165,7 @@ public class ArticleController {
         wrapper.orderByAsc("createtime");
         List<Article> list= articleService.list(wrapper);
         if(list.size()>5){
-            list.subList(0,5);
+            list=list.subList(0,5);
         }
 
         for (int i=0;i<list.size();i++){

@@ -15,16 +15,9 @@
             margin: 0;
             padding: 0;
         }
-        .layui-layout-admin .layui-header{
-            height: 80px;
-
-        }
         .layui-layout-admin .layui-body{
             top: 80px;
             width: 100%;
-            left: 0;
-        }
-        .layui-layout-admin .layui-footer{
             left: 0;
         }
         .table_fl {
@@ -55,16 +48,16 @@
 <body>
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo" style="letter-spacing: 5px">
-            安心筹
-        </div>
 
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item"><a href="javaScript:void (0)" onclick="startCj()">发起筹集</a></li>
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
-                    纸飞机
+                        <#if (Session.userInfo)??>
+                                <img src="${Session.userInfo.avatar}" class="layui-nav-img">
+                                ${Session.userInfo.name}
+                        </#if>
+
                 </a>
                 <dl class="layui-nav-child">
                     <dd><a href="javascript:void(0);" onclick="perfectInfo()">基本资料</a></dd>
@@ -73,6 +66,9 @@
             </li>
             <li class="layui-nav-item"><a href="javascript:void(0);" onclick="outLogin()">退出</a></li>
         </ul>
+
+
+
     </div>
     <div class="layui-body" >
         <div style="width: 48%;height: 48%;border: 2px solid #B5B5B5;float: left;margin-left: 1%" id="carouselDiv">
@@ -110,9 +106,9 @@
         </div>
     </div>
 
-    <div class="layui-footer" style="text-align: center;font-size: 0.3em;color:#B5B5B5">
+    <div class="layui-footer" style="text-align: center;font-size: 0.3em;color:#B5B5B5;left: 0px">
         <input type="hidden" id="urlPath" value="">
-        为了获得最佳操作体验，建议您使用最新版本的浏览器，支持1024 X 768以上分辨率
+        为了获得最佳操作体验，建议您使用最新版本的浏览器，支持1920 × 1080 以上分辨率
     </div>
 
 </div>
@@ -146,13 +142,13 @@
 
     //初始化页面，加载数据
     function init(){
-        $.post('article/getList',{status:1,curr:1,limit:5},function(res){
+        $.post('/ssm_Demo/article/getList',{status:1,curr:1,limit:7},function(res){
             //console.log(res);
             drawTable("#table1",res.page.records);
             laypage.render({
                 elem: 'laypage1' //注意，这里的 test1 是 ID，不用加 # 号
                 ,count: res.page.total //数据总数，从服务端得到
-                ,limit:5
+                ,limit:7
                 ,jump:function (obj,first) {
                     if(!first){
                         let res= getList({status:1,curr:obj.curr,limit:obj.limit})
@@ -163,7 +159,7 @@
         });
 
 
-        $.post('article/getList',{status:0,curr:1,limit:10},function(res){
+        $.post('/ssm_Demo/article/getList',{status:0,curr:1,limit:10},function(res){
             //console.log(res);
             drawTable("#table2",res.page.records);
             laypage.render({
@@ -179,7 +175,7 @@
             });
         });
 
-        $.post("article/getSlideShow",{},function(res){
+        $.post("/ssm_Demo/article/getSlideShow",{},function(res){
             let SlideShow=res.SlideShow;
             for (let i=0;i<SlideShow.length;i++){
                 $("#carousel_item").append("<div ><img src='/ssm_Demo/"+SlideShow[i].photos+"' style='cursor:pointer;width: 100%;height: 100%;' onclick='goDetilPage("+SlideShow[i].id+")'> </div>");
@@ -194,7 +190,7 @@
         });
     }
 
-    //监听变淡数据，标题和筹款金额
+    //监听表单数据，标题和筹款金额
     function changeIntValue(item){
          let lableId=$(item).attr("id");
          let value=$(item).val();
@@ -216,7 +212,7 @@
     function getList(item){
         let returnVal;
         $.ajax({
-            url:'article/getList',async:false,type:"POST",data:item,success:function(res){
+            url:'/ssm_Demo/article/getList',async:false,type:"POST",data:item,success:function(res){
                 returnVal=res;
             }
         });
@@ -249,18 +245,18 @@
 
     //转到详细页面
     function goDetilPage(articleId){
-        window.location.href="article/article.html?articleId="+articleId;
+        window.location.href="/ssm_Demo/article/article.html?articleId="+articleId;
     }
 
     //退出登录
     function outLogin(){
         $.ajax({
-            url: "user/outLogin",
+            url: "/ssm_Demo/user/outLogin",
             async: true,
             data:"",
             success: function(data) {
                 console.log("data");
-                location.href = "index.html";
+                location.href = "/ssm_Demo/index.html";
             },
             type: "post",
             dataType: "json"
@@ -301,16 +297,17 @@
                  var title=$("#title").val();
                  var describe=$("#describe").val();
                  var urlPath=$("#urlPath").val();
-                 $.post("article/saveArticle",{money:money,title:title,describe:describe,urlPath:urlPath},function(res){
+                 $.post("/ssm_Demo/article/saveArticle",{money:money,title:title,describe:describe,urlPath:urlPath},function(res){
                      if(res.code==200){
                          alert(res.msg);
                          layer.close(index);
+                         window.location.href="/ssm_Demo/home.html";
                      }
                  });
              }
              ,btn2: function(index, layero){
                  //按钮【按钮二】的回调
-                 $.post("article/removeImg",{url:$('#urlPath').val()},function(res){
+                 $.post("/ssm_Demo/article/removeImg",{url:$('#urlPath').val()},function(res){
                      console.log(res);
                  });
                  //return false 开启该代码可禁止点击该按钮关闭
@@ -324,7 +321,7 @@
          //多图片上传
          upload.render({
              elem: '#test2'
-             ,url: 'article/uoloadImg'
+             ,url: '/ssm_Demo/article/uoloadImg'
              ,multiple: true
              ,accept:'images'
              ,acceptMime: 'image/*'
@@ -336,7 +333,7 @@
                  let urlPathVal=$("#urlPath").val();
                  if(urlPathVal===""){
                      $.ajax({
-                         url:'article/genKey',async:false,type:"POST",success:function(res){
+                         url:'/ssm_Demo/article/genKey',async:false,type:"POST",success:function(res){
                              $("#urlPath").val(res.key);
 
                          }

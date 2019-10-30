@@ -28,7 +28,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/msgbox")
-public class MsgboxController extends MyWebSocketHander{
+public class MsgboxController {
 
     @Autowired
     MsgboxMapper msgboxMapper;
@@ -128,7 +128,7 @@ public class MsgboxController extends MyWebSocketHander{
         msgbox.setStatus(0);
         msgbox.setContent(user.getName()+"   通过了您的请求！！");
         msgboxMapper.insert(msgbox);
-        super.sendMsgboxNum(uid,msgboxMapper,from,from_group);
+        sendMsgboxNum(uid,msgboxMapper,from,from_group);
         R r=R.success();
         return r;
     }
@@ -153,7 +153,7 @@ public class MsgboxController extends MyWebSocketHander{
         msgbox.setStatus(0);
         msgbox.setContent(user.getName()+"   拒绝了您的请求！！");
         msgboxMapper.insert(msgbox);
-        super.sendMsgboxNum(uid,msgboxMapper,null,1);
+        sendMsgboxNum(uid,msgboxMapper,null,1);
         return r;
     }
 
@@ -207,8 +207,25 @@ public class MsgboxController extends MyWebSocketHander{
         msgbox.setTime(new Date());
         msgbox.setUid(uid);
         msgboxMapper.insert(msgbox);
-        super.sendMsgboxNum(uid,msgboxMapper,null,1);
+        sendMsgboxNum(uid,msgboxMapper,null,1);
         r.set("code",0);
         return r;
+    }
+
+
+    public void sendMsgboxNum(int uid, MsgboxMapper msgboxMapper,Integer from,Integer from_group) throws IOException {
+        Map<String, WebSocketSession> map= MyWebSocketHander.USER_ONLINE;
+        //判断一下对方是否在线，不在线则不发送消息。
+        if(map.containsKey(String.valueOf(uid))){
+            Map msgMap=new HashMap();
+            if(from!=null){
+                User user=userMapper.selectById(from);
+                msgMap.put("user",user);
+                msgMap.put("from_group",from_group);
+            }
+            msgMap.put("msgboxNum",msgboxMapper.getMsgCount(uid));
+            TextMessage testMsg = new TextMessage(JSON.toJSONString(msgMap));
+            map.get(String.valueOf(uid)).sendMessage(testMsg);
+        }
     }
 }
