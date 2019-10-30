@@ -44,7 +44,7 @@
         <span>{{ item.remark ? '附言: '+item.remark : '' }}</span>
       </p>
       <p class="layim-msgbox-btn">
-        <button class="layui-btn layui-btn-small" data-type="agree">同意</button>
+        <button class="layui-btn layui-btn-small" data-type="agree" msgboxid=" {{ item.id }} " from_group="{{ item.fromGroup }}">同意</button>
         <button class="layui-btn layui-btn-small layui-btn-primary" data-type="refuse" msgboxid=" {{ item.id }} ">拒绝</button>
       </p>
     </li>
@@ -128,8 +128,9 @@
     agree: function(othis){
       var li = othis.parents('li')
       ,uid = li.data('uid')
-      ,from_group = li.data('fromGroup')
-      ,user = cache[uid];
+      ,from_group = othis.attr("from_group")
+      ,user = cache[uid],
+       msgboxid=othis.attr("msgboxid");
 
       //选择分组
       parent.layui.layim.setFriendGroup({
@@ -153,18 +154,19 @@
         
         
           //实际部署时，请开启下述注释，并改成你的接口地址
-          /*
-          $.post('/im/agreeFriend', {
-            uid: uid //对方用户ID
+          $.post('/ssm_Demo/msgbox/agreeFriend', {
+             uid: uid //对方用户ID
             ,from_group: from_group //对方设定的好友分组
             ,group: group //我设定的好友分组
+            ,msgboxid:msgboxid //消息盒子id
+            ,from:userId //我的用户Id
           }, function(res){
             if(res.code != 0){
               return layer.msg(res.msg);
             }
 
             //将好友追加到主面板
-            parent.layui.layim.addList({
+          /*  parent.layui.layim.addList({
               type: 'friend'
               ,avatar: user.avatar //好友头像
               ,username: user.username //好友昵称
@@ -173,10 +175,9 @@
               ,sign: user.sign //好友签名
             });
             parent.layer.close(index);
-            othis.parent().html('已同意');
+            othis.parent().html('已同意');*/
           });
-          */
-          
+
         }
       });
     }

@@ -19,7 +19,7 @@ public class Msgbox {
 
     private Integer from1;
 
-    private String from_group;
+    private String fromGroup;
 
     private String type;
 
@@ -77,12 +77,12 @@ public class Msgbox {
         this.from1 = from;
     }
 
-    public String getFrom_group() {
-        return from_group;
+    public String getFromGroup() {
+        return fromGroup;
     }
 
-    public void setFrom_group(String from_group) {
-        this.from_group = from_group;
+    public void setFromGroup(String fromGroup) {
+        this.fromGroup = fromGroup;
     }
 
     public String getType() {

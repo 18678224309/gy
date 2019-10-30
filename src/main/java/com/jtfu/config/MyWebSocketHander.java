@@ -88,11 +88,16 @@ public class MyWebSocketHander implements WebSocketHandler {
 
     }
 
-    public void sendMsgboxNum(int uid, MsgboxMapper msgboxMapper) throws IOException {
+    public void sendMsgboxNum(int uid, MsgboxMapper msgboxMapper,Integer from,Integer from_group) throws IOException {
         Map<String, WebSocketSession> map= MyWebSocketHander.USER_ONLINE;
         //判断一下对方是否在线，不在线则不发送消息。
         if(map.containsKey(String.valueOf(uid))){
             Map msgMap=new HashMap();
+            if(from!=null){
+                User user=userService.getById(from);
+                msgMap.put("user",user);
+                msgMap.put("from_group",from_group);
+            }
             msgMap.put("msgboxNum",msgboxMapper.getMsgCount(uid));
             TextMessage testMsg = new TextMessage(JSON.toJSONString(msgMap));
             map.get(String.valueOf(uid)).sendMessage(testMsg);

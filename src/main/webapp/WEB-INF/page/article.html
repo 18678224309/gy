@@ -152,9 +152,20 @@
             //接收到服务端发来的信息后进行解析，显示；
 
             let data=JSON.parse(res.data);
-            console.log(data);
-            if(data.msgboxNum!=null||data.msgboxNum!=undefined){
+            if(data.msgboxNum!=null&&data.msgboxNum!=undefined){
                 layim.msgbox(data.msgboxNum);
+                if(data.user!=null&&data.user!=undefined){
+                    //同意
+                    let boxUser=data.user;
+                    layim.addList({
+                        type: 'friend'
+                        ,avatar: boxUser.avatar //好友头像
+                        ,username: boxUser.username //好友昵称
+                        ,groupid: data.from_group //所在的分组id
+                        ,id: boxUser.id //好友ID
+                        ,sign: boxUser.sign //好友签名
+                    });
+                }
             }else{
                 layim.getMessage(data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
             }

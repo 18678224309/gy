@@ -13,6 +13,7 @@ import com.jtfu.mapper.UserMapper;
 import com.jtfu.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -84,14 +85,52 @@ public class MsgboxController extends MyWebSocketHander{
 
     /**
      * 通过请求
-     * @param map
+     * @param uid: uid //对方用户ID
+     *             ,from_group: from_group //对方设定的好友分组
+     *             ,group: group //我设定的好友分组
+     *             ,msgboxid:msgboxid //消息盒子id
+     *             ,from:userId //我的用户Id
      * @return
      */
-    @PostMapping("/pass")
+    @PostMapping("/agreeFriend")
     @ResponseBody
-    public R pass(@RequestParam Map map){
-       R r=R.success();
-       return r;
+    @Transactional
+    public R pass(@RequestParam int uid,@RequestParam int from_group,@RequestParam int group,@RequestParam int msgboxid,@RequestParam int from) throws IOException {
+       //查询我的 group分组下的好友列表，将新的好友加入。
+        QueryWrapper queryWrapper=new QueryWrapper();
+        queryWrapper.eq("userid",from);
+        queryWrapper.eq("groupid",group);
+        UserGroup userGroup=userGroupMapper.selectOne(queryWrapper);
+        StringBuilder builder=new StringBuilder(userGroup.getUids());
+        builder.append(",");
+        builder.append(uid);
+        userGroup.setUids(builder.toString());
+        userGroupMapper.updateById(userGroup);
+        //------------------------------------
+        //查询对方的好友列表，将我加入对方的好友列表中
+        queryWrapper=new QueryWrapper();
+        queryWrapper.eq("userid",uid);
+        queryWrapper.eq("groupid",from_group);
+        userGroup=userGroupMapper.selectOne(queryWrapper);
+        builder=new StringBuilder(userGroup.getUids());
+        builder.append(",");
+        builder.append(from);
+        userGroup.setUids(builder.toString());
+        userGroupMapper.updateById(userGroup);
+        //---------------------------------------
+        //查询出这条消息记录并删除，返回新的消息记录;
+        Msgbox msgbox= msgboxMapper.selectById(msgboxid);
+        if(msgbox!=null){ msgboxMapper.deleteById(msgboxid);}
+        User user=userMapper.selectById(from);
+        msgbox=new Msgbox();
+        msgbox.setUid(uid);
+        msgbox.setTime(new Date());
+        msgbox.setStatus(0);
+        msgbox.setContent(user.getName()+"   通过了您的请求！！");
+        msgboxMapper.insert(msgbox);
+        super.sendMsgboxNum(uid,msgboxMapper,from,from_group);
+        R r=R.success();
+        return r;
     }
 
 
@@ -114,7 +153,7 @@ public class MsgboxController extends MyWebSocketHander{
         msgbox.setStatus(0);
         msgbox.setContent(user.getName()+"   拒绝了您的请求！！");
         msgboxMapper.insert(msgbox);
-        super.sendMsgboxNum(uid,msgboxMapper);
+        super.sendMsgboxNum(uid,msgboxMapper,null,1);
         return r;
     }
 
@@ -145,14 +184,14 @@ public class MsgboxController extends MyWebSocketHander{
         msgbox.setRemark(remark);
         msgbox.setContent("请求添加你为好友！");
         msgbox.setFrom(user.getId());
-        msgbox.setFrom_group(from_group);
+        msgbox.setFromGroup(from_group);
         msgbox.setHref("0");
         msgbox.setRead("0");
         msgbox.setStatus(0);
         msgbox.setTime(new Date());
         msgbox.setUid(uid);
         msgboxMapper.insert(msgbox);
-        super.sendMsgboxNum(uid,msgboxMapper);
+        super.sendMsgboxNum(uid,msgboxMapper,null,1);
         r.set("code",0);
         return r;
     }
