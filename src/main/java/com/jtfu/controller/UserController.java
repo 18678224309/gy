@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 
 /**
  * <p>
@@ -42,7 +43,12 @@ public class UserController {
         user.setPhone(phone);
         user.setName(username);
         user.setAge(10);
-        user.setAvatar("/static/image/80421574-D205-41EA-9631-C72CFDA90063.jpg");
+        user.setSex("1");
+        user.setRoleid(0);
+        user.setDelFlag(0);
+        user.setCreatetime(new Date());
+        user.setSign("在深邃的编码世界，做一枚轻盈的纸飞机");
+        user.setAvatar("/ssm_Demo/static/image/80421574-D205-41EA-9631-C72CFDA90063.jpg");
         boolean res = userService.save(user);
         return res;
     }
