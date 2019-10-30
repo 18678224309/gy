@@ -45,7 +45,7 @@
       </p>
       <p class="layim-msgbox-btn">
         <button class="layui-btn layui-btn-small" data-type="agree">同意</button>
-        <button class="layui-btn layui-btn-small layui-btn-primary" data-type="refuse">拒绝</button>
+        <button class="layui-btn layui-btn-small layui-btn-primary" data-type="refuse" msgboxid=" {{ item.id }} ">拒绝</button>
       </p>
     </li>
   {{# } else { }}
@@ -185,10 +185,12 @@
     ,refuse: function(othis){
       var li = othis.parents('li')
       ,uid = li.data('uid');
+      var msgboxid=othis.attr("msgboxid")
       layer.confirm('确定拒绝吗？', function(index){
         $.post('/ssm_Demo/msgbox/refuse', {
           uid: uid, //对方用户ID
-          from: userId //自己的用户id
+          from: userId, //自己的用户id
+          msgboxid:msgboxid
         }, function(res){
           if(res.code != 200){
             return layer.msg(res.msg);

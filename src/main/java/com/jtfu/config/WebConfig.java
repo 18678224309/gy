@@ -1,6 +1,7 @@
 package com.jtfu.config;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.Resource;
@@ -12,17 +13,19 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 @Configuration
 @EnableWebMvc
 @ComponentScan("com.jtfu")
-/*@ImportResource("classpath:springmvc.xml")*/
 @EnableAspectJAutoProxy
 @Import(MyWebSocketConfig.class)
 public class WebConfig extends WebMvcConfigurerAdapter implements WebMvcConfigurer {
 
- 
+    @Value("${ws}")
+    String ws;
     /*配置静态资源的处理*/
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
@@ -57,6 +60,9 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebMvcConfigur
         properties.setProperty("locale","zh_CN");
         properties.setProperty("number_format","#");
         configurer.setFreemarkerSettings(properties);
+        Map map=new HashMap();
+        map.put("ws",ws);
+        configurer.setFreemarkerVariables(map);//为freemarker设置全局参数；
         return configurer;
     }
     @Bean

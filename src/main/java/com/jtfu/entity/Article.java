@@ -44,8 +44,19 @@ public class Article implements Serializable {
 
     private Integer status;
 
+    private  Integer moneynow;
+
+
     @TableField(exist = false)
     private String[] photoPath;
+
+    public Integer getMoneynow() {
+        return moneynow;
+    }
+
+    public void setMoneynow(Integer moneynow) {
+        this.moneynow = moneynow;
+    }
 
     public String[] getPhotoPath() {
         return photoPath;

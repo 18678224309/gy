@@ -40,6 +40,9 @@ public class UserController {
         user.setUsername(username);
         user.setPassword(pwd);
         user.setPhone(phone);
+        user.setName(username);
+        user.setAge(10);
+        user.setAvatar("/static/image/80421574-D205-41EA-9631-C72CFDA90063.jpg");
         boolean res = userService.save(user);
         return res;
     }

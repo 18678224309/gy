@@ -3,7 +3,9 @@ package com.jtfu.config;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jtfu.entity.User;
+import com.jtfu.mapper.MsgboxMapper;
 import com.jtfu.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -84,6 +86,17 @@ public class MyWebSocketHander implements WebSocketHandler {
 
     public void  sendMsgToAll(){
 
+    }
+
+    public void sendMsgboxNum(int uid, MsgboxMapper msgboxMapper) throws IOException {
+        Map<String, WebSocketSession> map= MyWebSocketHander.USER_ONLINE;
+        //判断一下对方是否在线，不在线则不发送消息。
+        if(map.containsKey(String.valueOf(uid))){
+            Map msgMap=new HashMap();
+            msgMap.put("msgboxNum",msgboxMapper.getMsgCount(uid));
+            TextMessage testMsg = new TextMessage(JSON.toJSONString(msgMap));
+            map.get(String.valueOf(uid)).sendMessage(testMsg);
+        }
     }
 
     @Override

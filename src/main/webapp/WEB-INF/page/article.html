@@ -21,14 +21,8 @@
         }
         .layui-layout-admin .layui-body{
             top: 80px;
-            width: 60%;
+            width: 80%;
             background-color:#EEEEEE;
-            margin-right: auto;
-            margin-left: 10%;
-        }
-        .layui-upload-img{
-            width: 150px;
-            height: 100px;
         }
         .masterDiv{
             width: 99%;
@@ -89,7 +83,7 @@
 
                      <div class="contentDiv" style="float: left">
                            <h2 style="border-bottom: 1px dashed #a3c59a;position:relative;padding-top: 10px">${model.title}</h2>
-                           <h3 style="margin-left: 2%">筹集金额：${model.money},当前筹集：100</h3>
+                           <h3 style="margin-left: 2%">筹集金额：${model.money},当前筹集：${model.moneynow}</h3>
                             <div style="margin-top: 30px;margin-left: 5%">
                                 ${model.describe}
                             </div>
@@ -103,7 +97,7 @@
                             <div class="masterDiv" >
                                     <div class="imgDiv" style="float: left">
                                         <img src="${message.user.avatar}" style="margin-top: 32%;width: 100%;height:  100%;"></br></br></br></br>
-                                        <label onclick="add()"><a href="javaScript:void(0)">${message.user.name}：${message.user.status}</a></label>
+                                        <label onclick="add('${message.user.id}','${message.user.name}','${message.user.avatar}')"><a href="javaScript:void(0)">${message.user.name}：${message.user.status}</a></label>
                                     </div>
 
                                     <div class="contentDiv" style="float: left">
@@ -146,7 +140,7 @@
             ,msgbox: '/ssm_Demo/static/dist/css/modules/layim/html/msgbox.html?userId='+userId //消息盒子页面地址，若不开启，剔除该项即可
         });
 
-        let socket = new WebSocket('ws://127.0.0.1:8080/ssm_Demo/webSocket?userId='+userId);
+        let socket = new WebSocket('${ws}/webSocket?userId='+userId);
         layim.on('sendMessage', function(res){
             //监听到上述消息后，就可以轻松地发送socket了，如：
             socket.send(JSON.stringify({
@@ -156,19 +150,23 @@
         });
         socket.onmessage = function(res){
             //接收到服务端发来的信息后进行解析，显示；
+
             let data=JSON.parse(res.data);
-            layim.getMessage(data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
+            console.log(data);
+            if(data.msgboxNum!=null||data.msgboxNum!=undefined){
+                layim.msgbox(data.msgboxNum);
+            }else{
+                layim.getMessage(data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
+            }
         };
 
          //监听layim建立就绪 获得未读取的消息;
          layim.on('ready', function(res){
-            setInterval(function(){
-                $.get('/ssm_Demo/msgbox/getMsgCount',{uid:userId},function(res){
-                    if(res>0){
-                        layim.msgbox(res);
-                    }
-                });
-            },1000*2)
+             $.get('/ssm_Demo/msgbox/getMsgCount',{uid:userId},function(res){
+                 if(res>0){
+                     layim.msgbox(res);
+                 }
+             });
          });
     });
 
@@ -218,7 +216,7 @@
             ,avatar: avatar
             ,submit: function(group, remark, index){
                 //通知对方
-                $.post('/ssm_Demo/webSocket/add', {
+                $.post('/ssm_Demo/msgbox/add', {
                     uid: uid
                     ,from_group: group
                     ,remark: remark
