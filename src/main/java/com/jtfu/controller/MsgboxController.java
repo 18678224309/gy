@@ -157,6 +157,15 @@ public class MsgboxController extends MyWebSocketHander{
         return r;
     }
 
+    /**
+     *
+     * @param uid 要给谁发送消息
+     * @param from_group 加入哪个分组
+     * @param remark   备注
+     * @param session
+     * @return
+     * @throws IOException
+     */
     @PostMapping("/add")
     @ResponseBody
     public R add(@RequestParam int uid, @RequestParam String from_group, @RequestParam String remark, HttpSession session) throws IOException {
@@ -175,9 +184,16 @@ public class MsgboxController extends MyWebSocketHander{
             for(int j=0;j<uids.length;j++){
                 if(uids[i].equals(user.getId().toString())){
                     return R.error("已经添加好友，请勿重复添加！");
-                }
+                  }
             }
         }
+        //查询当前的添加消息是否已存在；
+        QueryWrapper msgboxWrapper=new QueryWrapper();
+        msgboxWrapper.eq("uid",uid);
+        msgboxWrapper.eq("from_group",from_group);
+         if(msgboxMapper.selectOne(msgboxWrapper)!=null){
+             return R.error("消息已经发送，请等待回复！");
+         }
         R r=R.success();
         //接收到前端传来的添加请求后，保存至数据库未读消息
         Msgbox msgbox=new Msgbox();
