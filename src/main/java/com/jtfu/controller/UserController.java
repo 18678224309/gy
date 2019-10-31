@@ -9,11 +9,11 @@ import com.jtfu.service.IUserGroupService;
 import com.jtfu.service.IUserService;
 import com.jtfu.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 
@@ -125,4 +125,11 @@ public class UserController {
         return 0;
     }
 
+    //添加头像
+    @RequestMapping("/upT")
+    @ResponseBody
+    public void upLodeTou(@RequestPart("photo") MultipartFile photo, HttpServletRequest request){
+        System.out.println(photo.isEmpty());
+
+    }
 }

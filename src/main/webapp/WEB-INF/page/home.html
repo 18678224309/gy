@@ -265,20 +265,107 @@
 
     //完善个人信息
     function perfectInfo(){
-        // $.ajax({
-        //     url: "user/perfectInfo",
-        //     async: true,
-        //     data:"",
-        //     success: function(data) {
-        //         console.log("data");
-        //         location.href = "index.html";
-        //     },
-        //     type: "post",
-        //     dataType: "json"
-        // })
+        console.log(11111)
         //调出弹出层
+        layer.open({
+            type:1,
+            title: '完善个人信息',
+            btn:[],
+            closeBtn:"1",
+            shadeClose:false,
+            area: ['500px', '800px'],
+            content:
+                '<div style="padding: 20px 20px 20px 20px;">\n' +
 
+                '<div class="layui-upload">\n' +
+                '<button type="button" class="layui-btn" id="test1">上传图片</button>\n' +
+                '<div class="layui-upload-list">\n' +
+                '<img class="layui-upload-img" id="demo1">\n' +
+                '<p id="demoText"></p>\n' +
+                '</div>\n' +
+                '</div>   \n' +
+
+                '<form class="layui-form" action="" id="wanshanxinxi">\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label">姓名</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label">年龄</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="age" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label">单选框</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="radio" name="sex" value="1" title="男" checked="">\n' +
+                '      <input type="radio" name="sex" value="0" title="女">\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item layui-form-text">\n' +
+                '    <label class="layui-form-label">个性签名</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '<textarea placeholder="选填" class="layui-textarea" name="sign"></textarea>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                ' <div class="layui-form-item layui-form-text">\n' +
+                '<label class="layui-form-label">头像</label>\n' +
+                '<div class="layui-input-block">\n' +
+                ' <input id="upTouxiang" type="text" name="avatar" lay-verify="required" autocomplete="off" placeholder="" class="layui-input">\n' +
+                '</div>\n' +
+                '</div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <button type="button" class="layui-btn" lay-submit lay-filter="demoT" id="touxiang" >立即提交</button>\n' +
+                '      <button type="reset" class="layui-btn layui-btn-primary">重置</button>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '</form>\n' +
+                '</div>',
+            cancel: function(index, layero){
+                if(confirm('确定要关闭么')){ //只有当点击confirm框的确定时，该层才会关闭
+                    layer.close(index)
+                }
+                return false;
+            }
+        });
+        form.render();
+        //头像上传
+        upload.render({
+            elem: '#test1'
+            ,url: 'user/upT'
+            ,field:'photo'
+            ,accept:'images'
+            ,acceptMime: 'image/*'
+            // ,auto:false                  //禁止自动
+            // ,bindAction: '#touxiang'   //按钮触发上传
+            ,before: function(obj){
+                console.log(obj)
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    console.log(result)
+                    $('#demo1').attr('src', result); //图片链接（base64）
+                    $("#upTouxiang").val($('#demo1').attr('src'))
+                });
+            }
+            ,done: function(res){
+                //如果上传失败
+                if(res.code > 0){
+                    return layer.msg('上传失败');
+                }
+                //上传成功
+            }
+
+        });
     }
+    //监听提交
+    form.on('submit(demoT)', function(data){
+        console.log("详细信息提交");
+        return false;
+    });
 
     //点击筹集按钮后的相应窗口
     function startCj(){
