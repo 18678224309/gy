@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="keywords" content="fly,layui,前端社区">
+    <meta name="description" content="Fly社区是经典模块化前端框架 layui 的官方社区，平台致力于为 layui 开发者提供技术解答、分享、讨论等各类服务。">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Fly - layui 前端框架官方社区</title>
+    <link rel="stylesheet" href="/ssm_Demo/static/Fly/font_24081_qs69ykjbea.css">
+    <link rel="stylesheet" href="/ssm_Demo/static/Fly/layui.css">
+    <link rel="stylesheet" href="/ssm_Demo/static/Fly/global.css" charset="utf-8">
+    <script src="/ssm_Demo/static/Fly/hm.js.下载"></script>
+    <link id="layuicss-layer" rel="stylesheet" href="/ssm_Demo/static/Fly/layer.css" media="all">
+    <link rel="stylesheet" href="/ssm_Demo/static/dist/css/layui.css">
+    <style>
+        .fly-list li{
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="fly-header layui-bg-black">
+    <div class="layui-container">
+
+        <ul class="layui-nav fly-nav-user">
+            <li class="layui-nav-item" style="float: right">
+                <#if (Session.userInfo)??>
+                        <a class="fly-nav-avatar"  href="/ssm_Demo/center.html" target="_blank">
+                            <cite class="layui-hide-xs"> ${Session.userInfo.name}</cite>
+                            <img src=" /ssm_Demo${Session.userInfo.avatar}">
+                            <dl class="layui-nav-child">
+                                <dd><a href="javascript:;" onclick="outLogin()">退出</a></dd>
+                            </dl>
+                            <!-- <span class="layui-badge">1</span>-->
+                        </a>
+                </#if>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="fly-panel fly-column">
+    <div class="layui-container">
+        <ul class="layui-clear">
+            <li class="layui-hide-xs  layui-this"><a href="https://fly.layui.com/">首页</a></li>
+        </ul>
+        <div class="fly-column-right layui-hide-xs">
+            <a href="/ssm_Demo/addArticle.html" class="layui-btn">发表新帖</a>
+        </div>
+
+    </div>
+</div>
+<div class="layui-container">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="fly-panel layui-hide-xs">
+                <div class="layui-row fly-panel-main" style="padding: 15px;">
+                    <div class="layui-carousel fly-topline" id="FLY_topline" lay-anim="fade" lay-indicator="inside"
+                         lay-arrow="hover" style="width: 100%;">
+
+                        <div carousel-item="" style="width: 100%;height: 100%;" id="carousel_item">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="fly-panel" style="margin-bottom: 0;">
+                <div class="fly-panel-title fly-filter"><a href="javaScript:void(0)" class="layui-this">综合</a><span
+                        class="fly-mid"></span></div>
+                <ul class="fly-list" id="table">
+
+                </ul>
+
+                <div style="text-align: center">
+                    <div id="laypage"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="fly-panel"><h3 class="fly-panel-title"></h3>
+                <div class="layui-row fly-panel-main" style="padding: 15px;">
+
+                </div>
+            </div>
+            <div class="fly-panel fly-signin">
+
+            </div>
+            <div class="fly-panel">
+
+            </div>
+            <div class="fly-panel fly-rank fly-rank-reply" id="LAY_replyRank"><h3 class="fly-panel-title">回贴周榜</h3>
+                <dl id="userHot">
+
+                </dl>
+            </div>
+            <dl class="fly-panel fly-list-one" id="hot">
+                <dt class="fly-panel-title">本周热议</dt>
+
+            </dl>
+            <div class="fly-panel">
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="fly-footer"><p><a href="http://fly.layui.com/"></a>
+
+</div>
+</body>
+<script src="/ssm_Demo/static/dist/layui.js"></script>
+<script src="/ssm_Demo/static/jquery/jquery.min.js"></script>
+<script>
+    layui.use(['carousel','laypage','element'], function(){
+        var carousel = layui.carousel,laypage= layui.laypage,element = layui.element; ;
+
+        $.post("/ssm_Demo/article/getSlideShow",{},function(res){
+            let SlideShow=res.SlideShow;
+            for (let i=0;i<SlideShow.length;i++){
+                $("#carousel_item").append("<img src='/ssm_Demo/"+SlideShow[i].photos+"' style='cursor:pointer;width: 100%;height: 300px;' onclick='goDetilPage("+SlideShow[i].id+")'>");
+            }
+            //常规轮播
+            carousel.render({
+                elem: '#FLY_topline'
+                ,arrow: 'hover'
+                ,width:'100%'
+            });
+        });
+
+        $.post('/ssm_Demo/article/getList',{curr:1,limit:50},function(res){
+            drawTable("#table",res.page.records);
+            laypage.render({
+                elem: 'laypage' //注意，这里的 test1 是 ID，不用加 # 号
+                ,count: res.page.total //数据总数，从服务端得到
+                ,limit:50
+                ,jump:function (obj,first) {
+                    if(!first){
+                        let res= getList({curr:obj.curr,limit:obj.limit})
+                        drawTable("#table",res.page.records);
+                    }
+                }
+            });
+        });
+
+        $.post('/ssm_Demo/article/getHot',{},function(res){
+                let hotList=res.hotList;
+                for(let i=0;i<=hotList.length;i++){
+                    let hot="<dd><a href=\"javaScript:void(0)\" onclick=\"goDetilPage("+hotList[i].id+")\">"+hotList[i].title+"</a> <span><i class=\"iconfont icon-pinglun1\">"+hotList[i].replyNum+"</i></span></dd>";
+                    $("#hot").append(hot);
+                }
+        });
+
+
+        $.post('/ssm_Demo/user/getHotUser',{},function(res){
+            let userHot=res.userHot;
+            for(let i=0;i<=userHot.length;i++){
+                let hot="<dd><a href='javaScript:void(0)' ><img src='/ssm_Demo"+userHot[i].avatar+"'><cite>"+userHot[i].name+"</cite><i>"+userHot[i].replyNum+"次回复</i></a></dd>";
+                $("#userHot").append(hot);
+            }
+        });
+    });
+
+    //转到详细页面
+    function goDetilPage(articleId){
+       window.location.href="/ssm_Demo/article/reply.html?articleId="+articleId;
+    }
+
+    //退出
+    function outLogin(){
+        window.location.href="/ssm_Demo/user/outLogin";
+
+    }
+    //请求列表数据
+    function getList(item){
+        let returnVal;
+        $.ajax({
+            url:'/ssm_Demo/article/getList',async:false,type:"POST",data:item,success:function(res){
+                returnVal=res;
+            }
+        });
+        return returnVal;
+    }
+    //请求返回数据后绘制
+    function drawTable(tableId,data){
+        $(tableId).html("");
+        for(let i=0;i<data.length;i++){
+            let li="<li>\n" +
+                "                        <h2><a class=\"layui-badge\">筹款</a> <a href=\"javaScript:void(0)\" onclick=\"goDetilPage("+data[i].id+")\">"+data[i].title+"</a></h2>\n" +
+                "                        <div class=\"fly-list-info\"><a href=\"javaScript:void(0)\" link=\"\">\n" +
+                "                            <cite>"+data[i].auth+"</cite> </a> <span>"+data[i].createtime+"</span>  <span class=\"fly-list-nums\"><i\n" +
+                "                                class=\"iconfont icon-pinglun1\" title=\"回复\"></i>"+data[i].replyNum+" </span></div>\n" +
+                "                        <div class=\"fly-list-badge\"></div>\n" +
+                "                    </li>";
+            $(tableId).append(li);
+        }
+    }
+</script>
+</html>
