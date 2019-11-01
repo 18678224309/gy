@@ -59,7 +59,6 @@ public class WebSocketController {
         R r=R.success();
         //1,将登陆用户查询出来  2,得到登陆用户的所有列表，  3，将列表下的所有人员列出
         User user= (User) session.getAttribute("userInfo");
-
         //查询用户所拥有的分组id
         QueryWrapper userGroupW=new QueryWrapper();
         userGroupW.eq("userid",user.getId());
@@ -92,7 +91,11 @@ public class WebSocketController {
                 userW.in("id",ids);
                 userW.isNotNull("status");
                 userW.orderByDesc("status");
-               itemGroup.setList(userService.list(userW));
+                List<User> lists=userService.list(userW);
+                for(int j=0;j<lists.size();j++){
+                    lists.get(j).setAvatar("/ssm_Demo/"+lists.get(j).getAvatar());
+                }
+               itemGroup.setList(lists);
                friendList.set(i,itemGroup);
             }
         }

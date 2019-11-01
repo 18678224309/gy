@@ -50,6 +50,18 @@ public class Article implements Serializable {
     @TableField(exist = false)
     private String[] photoPath;
 
+    @TableField(exist = false)
+    private int replyNum;
+
+
+    public int getReplyNum() {
+        return replyNum;
+    }
+
+    public void setReplyNum(int replyNum) {
+        this.replyNum = replyNum;
+    }
+
     public Integer getMoneynow() {
         return moneynow;
     }

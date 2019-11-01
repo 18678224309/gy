@@ -8,14 +8,24 @@ import com.jtfu.mapper.UserMapper;
 import com.jtfu.service.IUserGroupService;
 import com.jtfu.service.IUserService;
 import com.jtfu.service.impl.UserServiceImpl;
+import com.jtfu.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.HttpRequest;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * <p>
@@ -31,6 +41,8 @@ public class UserController {
 
     @Autowired
     IUserService userService;
+    @Autowired
+    UserMapper userMapper;
     @Autowired
     IUserGroupService userGroupService;
     /*注册*/
@@ -104,25 +116,69 @@ public class UserController {
     }
 
     //退出登录
-    @RequestMapping("/outLogin")
-    public int outLogin(HttpSession session,User user){
-        user = (User)session.getAttribute("userInfo");
+    @GetMapping("/outLogin")
+    public void outLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session=request.getSession();
+        User user = (User)session.getAttribute("userInfo");
         //修改登陆状态
         user.setStatus("offline");
         QueryWrapper qw = new QueryWrapper();
         boolean isOffline = userService.updateById(user);
         session.removeAttribute("userInfo");
-        if(session.getAttribute("userInfo")==null && isOffline == true){
-            return 1;
-        }
-        return 0;
+        request.getRequestDispatcher("/index.html").forward(request, response);
     }
 
     //完善个人信息
-    @RequestMapping("/perfectInfo")
-    public int perfectInfo(){
+    @RequestMapping("/updateUser")
+    public R perfectInfo(@RequestParam Map map,HttpSession session){
+        //获得所有的属性
+        Method[] methods=User.class.getDeclaredMethods();
+        //对属性进行循环，与map中进行比较，如果有的话进行更新操作;
+        User user= (User) session.getAttribute("userInfo");
+        String name= (String) map.get("name");
+        String sign= (String) map.get("sign");
+        String password= (String) map.get("password");
+        if(name!=null){
+            user.setName(name);
+        }
+        if(sign!=null){
+            user.setSign(sign);
+        }
+        if(password!=null&&!password.equals("")){
+            user.setPassword(password);
+        }
+        userMapper.updateById(user);
+        return R.success();
+    }
 
-        return 0;
+
+    @PostMapping("/getHotUser")
+    public R getHotUser(){
+        return R.success().set("userHot",userMapper.getHotUser());
+    }
+
+    @PostMapping("/uploadImg")
+    public R uploadImg(@RequestParam("uid")int uid,@RequestParam("photo")MultipartFile photo, HttpServletRequest request) throws IOException {
+        String staticPath=request.getRealPath("static");
+        String path=staticPath+"\\image\\"+uid;
+        User user=userMapper.selectById(uid);
+        if(user!=null){
+            File file=new File(path);
+            if(!file.exists()){
+                file.mkdir();
+            }
+            String imgPath=path+"\\"+photo.getOriginalFilename();
+            OutputStream outputStream=new FileOutputStream(new File(imgPath));
+            outputStream.write(photo.getBytes());
+            outputStream.flush();
+            outputStream.close();
+            String subPath=imgPath.substring(imgPath.indexOf("\\static"),imgPath.length());
+            user.setAvatar(subPath);
+            userMapper.updateById(user);
+            request.getSession().setAttribute("userInfo",user);
+            return R.success().set("imgPath",subPath);
+        }
+        return R.error();
     }
 
 }

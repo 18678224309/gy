@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jtfu.entity.Article;
 import com.jtfu.entity.Message;
 import com.jtfu.entity.User;
+import com.jtfu.mapper.ArticleMapper;
 import com.jtfu.mapper.MessageMapper;
 import com.jtfu.mapper.UserMapper;
 import com.jtfu.service.IArticleService;
@@ -28,7 +29,7 @@ import java.util.*;
 public class ArticleController {
 
     @Autowired
-    IArticleService articleService;
+    ArticleMapper articleMapper;
     @Autowired
     MessageMapper messageMapper;
     @Autowired
@@ -49,10 +50,10 @@ public class ArticleController {
     }
 
 
-    @GetMapping("/article.html")
-    public String articleHtml(@RequestParam("articleId")int articleId, Model model, HttpSession session){
+    @GetMapping("/reply.html")
+    public String replyHtml(@RequestParam("articleId")int articleId, Model model, HttpSession session){
         //依据文章id，查询到文章内容
-        Article article=articleService.getById(articleId);
+        Article article=articleMapper.selectById(articleId);
         User auth=userMapper.selectById(article.getAuthId());
         String status=auth.getStatus();
         status=status.equals("online")?"在线":"离线";
@@ -78,7 +79,7 @@ public class ArticleController {
         model.addAttribute("model",article);
         model.addAttribute("messages",messages);
         model.addAttribute("auth",auth);
-        return "article";
+        return "reply";
     }
 
     @PostMapping("/genKey")
@@ -109,15 +110,19 @@ public class ArticleController {
         File file=new File(urlPath);
         File[] files=file.listFiles();
         StringBuilder builder=new StringBuilder();
-        String imgPath=urlPath.substring(urlPath.indexOf("\\static"),urlPath.length());
-        Arrays.stream(files).forEach(f->{
-            builder.append(imgPath+"\\"+f.getName());
-            builder.append(",");
-        });
+        int index= urlPath.indexOf("\\static");
+       if(files!=null){
+           String imgPath=urlPath.substring(index,urlPath.length());
+           for(int i=0;i<files.length;i++){
+               File f=files[i];
+               builder.append(imgPath+"\\"+f.getName());
+               builder.append(",");
+           }
+       }
         article.setPhotos(builder.toString());
         article.setCreatetime(new Date());
         article.setStatus(1);
-        articleService.save(article);
+        articleMapper.insert(article);
         return R.success();
     }
 
@@ -149,10 +154,18 @@ public class ArticleController {
                 queryWrapper.eq(fieldName,map.get(fieldName));
             }
         }
-        articleService.page(page,queryWrapper);
+        List<Article> list=articleMapper.getArticleListPage((page.getCurrent()-1)*page.getSize(),page.getSize(),"createtime");
+        page.setRecords(list);
+        page.setTotal(articleMapper.selectCount(queryWrapper));
         return R.success().set("page",page);
     }
 
+    @PostMapping("/getHot")
+    @ResponseBody
+    public R getHot(){
+        List<Article> list=articleMapper.getArticleListPage(0,20,"replyNum");
+        return R.success().set("hotList",list);
+    }
 
     @PostMapping("/getSlideShow")
     @ResponseBody
@@ -163,7 +176,7 @@ public class ArticleController {
         wrapper.isNotNull("photos");
         wrapper.ne("photos","");
         wrapper.orderByAsc("createtime");
-        List<Article> list= articleService.list(wrapper);
+        List<Article> list= articleMapper.selectList(wrapper);
         if(list.size()>5){
             list=list.subList(0,5);
         }

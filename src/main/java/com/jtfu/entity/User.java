@@ -1,6 +1,7 @@
 package com.jtfu.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
@@ -46,6 +47,17 @@ public class User implements Serializable {
     private Date createtime;
 
     private Integer roleid;
+
+    @TableField(exist = false)
+    private Integer replyNum;
+
+    public Integer getReplyNum() {
+        return replyNum;
+    }
+
+    public void setReplyNum(Integer replyNum) {
+        this.replyNum = replyNum;
+    }
 
     public Integer getId() {
         return id;

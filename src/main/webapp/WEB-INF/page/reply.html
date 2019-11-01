@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<!-- saved from url=(0040)https://fly.layui.com/jie/59363/#comment -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>谁有laypage分页独立组件 - Fly社区</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="/ssm_Demo/static/Fly/font_24081_qs69ykjbea.css">
+    <link rel="stylesheet" href="/ssm_Demo/static/Fly/global.css" charset="utf-8">
+    <script src="/ssm_Demo/static/Fly//hm.js.下载"></script>
+    <link id="layuicss-layer" rel="stylesheet" href="/ssm_Demo/static/dist/css/modules/layer/default/layer.css" media="all">
+    <link rel="stylesheet" href="/ssm_Demo/static/dist/css/layui.css">
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12 content detail">
+            <div class="fly-panel detail-box"><h1>${model.title}</h1>
+                <input type="hidden" value="${model.id}" id="articleid"/>
+                <div class="fly-detail-info"></div>
+                <div class="detail-about"><a class="fly-avatar" href="javaScript:void(0)"> <img
+                        src="/ssm_Demo${auth.avatar}" alt="China丶Moli" onclick="add('${auth.id}','${auth.name}','${auth.avatar}')"> </a>
+                    <div class="fly-detail-user"><a href="javaScript:void(0)" class="fly-link" onclick="add('${auth.id}','${auth.name}','${auth.avatar}')"> <cite>${auth.name}</cite>
+                    </a> <span>${model.createtime?string("yyyy-MM-dd HH:mm:ss")}</span></div>
+                    <div class="detail-hits"><span style="padding-right: 10px; color: #FF7200">金额：${model.money}￥  &nbsp;&nbsp;&nbsp;&nbsp;已筹集：${model.moneynow}￥ </span></div>
+                </div>
+                <div class="layui-btn-container fly-detail-admin" id="LAY_jieAdmin" data-id="59363">
+                </div>
+                <div class="detail-body layui-text photos">
+                    ${model.describe} <br>
+                    <#assign layer = model.photos?split(",")/>
+                    <#list layer as path>
+                        <#if path!=''>
+                            <img src="/ssm_Demo${path}" style="width: 80%;height: 500px;margin-left: 5%;margin-top: 2%">
+                        </#if>
+                    </#list>
+                </div>
+            </div>
+            <div class="fly-panel detail-box" id="flyReply">
+                <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">
+                    <legend>回帖</legend>
+                </fieldset>
+                <ul class="jieda" id="jieda">
+                    <#list messages as message>
+                            <li data-id="206148"><a name="item-1572567678484"></a>
+                                <div class="detail-about detail-about-reply">
+                                    <a class="fly-avatar"  href="javaScript:void(0)"> <img
+                                            src="/ssm_Demo${message.user.avatar}" alt="${message.user.name}" onclick="add('${message.user.id}','${message.user.name}','${message.user.avatar}')"> </a>
+                                    <div class="fly-detail-user"><a href="javaScript:void(0)" onclick="add('${message.user.id}','${message.user.name}','${message.user.avatar}')" class="fly-link">
+                                        <cite>${message.user.name}</cite> </a></div>
+                                    <div class="detail-hits"><span>${message.createtime?string("yyyy-MM-dd HH:mm:ss")}</span></div>
+                                </div>
+                                <div class="detail-body layui-text jieda-body photos">
+                                    ${message.message}
+                                </div>
+                                <div class="jieda-reply"><span class="jieda-zan " type="zan">
+                                </div>
+                            </li>
+                    </#list>
+                </ul>
+                <div style="text-align: center"></div>
+                <a name="comment"> </a>
+                <div class="layui-form layui-form-pane">
+                        <div class="layui-form-item layui-form-text">
+                            <div class="layui-input-block">
+                                <div class="layui-unselect fly-edit"></div>
+                                <textarea id="message" name="content" required="" lay-verify="required"
+                                          placeholder="请输入内容" class="layui-textarea fly-editor"
+                                          style="height: 150px;"></textarea></div>
+                        </div>
+                        <div class="layui-form-item"><input type="hidden" name="jid" value="59363"> <input type="hidden"
+                                                                                                           name="daPages"
+                                                                                                           value="1">
+                            <button class="layui-btn" onclick="submit()">提交回复</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="/ssm_Demo/static/dist/layui.js"></script>
+</body>
+<script>
+    let layer;
+    let $;
+    let layim;
+    let userId='${userInfo.id!""}';
+    layui.use('layim', function(){
+        layer=layui.layer;
+        $=layui.jquery;
+        layim = layui.layim;
+        layim.config({
+            init: {
+                url: '/ssm_Demo/webSocket/getList', //接口地址（返回的数据格式见下文）
+            } //获取主面板列表信息，下文会做进一步介绍
+
+            ,msgbox: '/ssm_Demo/static/dist/css/modules/layim/html/msgbox.html?userId='+userId //消息盒子页面地址，若不开启，剔除该项即可
+        });
+
+        let socket = new WebSocket('${ws}/webSocket?userId='+userId);
+        layim.on('sendMessage', function(res){
+            //监听到上述消息后，就可以轻松地发送socket了，如：
+            socket.send(JSON.stringify({
+                type: 'chatMessage' //随便定义，用于在服务端区分消息类型
+                ,data: res
+            }));
+        });
+        socket.onmessage = function(res){
+            //接收到服务端发来的信息后进行解析，显示；
+
+            let data=JSON.parse(res.data);
+            if(data.msgboxNum!=null&&data.msgboxNum!=undefined){
+                layim.msgbox(data.msgboxNum);
+                if(data.user!=null&&data.user!=undefined){
+                    //同意
+                    let boxUser=data.user;
+                    layim.addList({
+                        type: 'friend'
+                        ,avatar: boxUser.avatar //好友头像
+                        ,username: boxUser.username //好友昵称
+                        ,groupid: data.from_group //所在的分组id
+                        ,id: boxUser.id //好友ID
+                        ,sign: boxUser.sign //好友签名
+                    });
+                }
+            }else{
+                layim.getMessage(data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
+            }
+        };
+
+        //监听layim建立就绪 获得未读取的消息;
+        layim.on('ready', function(res){
+            $.get('/ssm_Demo/msgbox/getMsgCount',{uid:userId},function(res){
+                if(res>0){
+                    layim.msgbox(res);
+                }
+            });
+        });
+    });
+
+    function submit() {
+        let articleid=$("#articleid").val();
+        let message=$("#message").val();
+        $.post('/ssm_Demo/message/addMessage',{articleid:articleid,message:message},function(res){
+            if(res.code==200){
+                alert(res.msg);
+                window.location.href="/ssm_Demo/article/reply.html?articleId="+articleid;
+            }
+        });
+    }
+
+    function add(uid,name,avatar){
+        //实际使用时数据由动态获得
+        layim.add({
+            type: 'friend'
+            ,username: name
+            ,avatar: avatar
+            ,submit: function(group, remark, index){
+                //通知对方
+                $.post('/ssm_Demo/msgbox/add', {
+                    uid: uid
+                    ,from_group: group
+                    ,remark: remark
+                }, function(res){
+                    if(res.code != 0){
+                        return layer.msg(res.msg);
+                    }else{
+                        layer.msg('好友申请已发送，请等待对方确认', {
+                            icon: 1
+                            ,shade: 0.5
+                        }, function(){
+                            layer.close(index);
+                        });
+                    }
+                });
+            }
+        });
+    }
+</script>
+</html>

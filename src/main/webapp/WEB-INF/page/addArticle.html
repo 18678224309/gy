@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!-- saved from url=(0030)https://fly.layui.com/jie/add/ -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>发表新帖 - Fly社区</title>
+    <link rel="stylesheet" href="/ssm_Demo/static/Fly/font_24081_qs69ykjbea.css">
+    <link rel="stylesheet" href="/ssm_Demo/static/Fly/layui.css">
+    <link rel="stylesheet" href="/ssm_Demo/static/Fly/global.css" charset="utf-8">
+    <script src="/ssm_Demo/static/Fly/hm.js.下载"></script>
+    <link id="layuicss-layer" rel="stylesheet" href="/ssm_Demo/static/Fly/layer.css" media="all">
+</head>
+<body>
+
+<div class="layui-container fly-marginTop">
+    <div class="fly-panel" pad20="" style="padding-top: 5px;">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-tab layui-tab-brief" lay-filter="user">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">发表新帖</li>
+                </ul>
+                <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
+                    <div class="layui-tab-item layui-show">
+                        <form action="https://fly.layui.com/jie/add/" method="post">
+                            <div class="layui-row layui-col-space15 layui-form-item">
+
+                                <div class="layui-col-md9"><label for="L_title" class="layui-form-label">标题</label>
+                                    <div class="layui-input-block"><input type="text" id="L_title" name="title"
+                                                                          required="" lay-verify="required"
+                                                                          autocomplete="off" class="layui-input" oninput="changeIntValue(this)"></div>
+                                </div>
+                            </div>
+
+                            <div class="layui-row layui-form-item">
+                                <div class="layui-col-md3"><label class="layui-form-label">筹集金额</label>
+                                    <div class="layui-input-block"><input type="number" id="L_money" name="title"
+                                                                          required="" lay-verify="required"
+                                                                          autocomplete="off" class="layui-input" oninput="changeIntValue(this)"></div>
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item layui-form-text">
+                                <div class="layui-input-block">
+                                    <div class="layui-unselect fly-edit"><span
+                                            type="picture" title="图片：img[src]">
+                                        <i class="iconfont icon-tupian" id="L_img"></i></span></div>
+                                    <textarea id="L_content" name="content" required="" lay-verify="required"
+                                              placeholder="详细描述" class="layui-textarea fly-editor"
+                                              style="height: 260px;"></textarea></div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <button class="layui-btn" onclick="submit()">立即发布</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="urlPath" value="">
+</body>
+<script src="/ssm_Demo/static/dist/layui.js"></script>
+<script src="/ssm_Demo/static/jquery/jquery.min.js"></script>
+<script>
+    layui.use('upload', function(){
+        var upload = layui.upload;
+
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#L_img' //绑定元素
+            ,url: '/ssm_Demo/article/uoloadImg' //上传接口
+            ,accept:'images'
+            ,acceptMime: 'image/*'
+            ,field:'photos'
+            ,multiple: true  //多文件上传
+            ,data:{url:function(){
+                    return $("#urlPath").val();
+                }}
+            ,before: function(obj){
+                let urlPathVal=$("#urlPath").val();
+                if(urlPathVal===""){
+                    $.ajax({
+                        url:'/ssm_Demo/article/genKey',async:false,type:"POST",success:function(res){
+                            $("#urlPath").val(res.key);
+                        }
+                    });
+                }
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    //alert(result);
+                    //$('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img">')
+                });
+            }
+        });
+    });
+
+    function submit(){
+        var money=$("#L_money").val();
+        var title=$("#L_title").val();
+        var describe=$("#L_content").val();
+        var urlPath=$("#urlPath").val();
+        $.post("/ssm_Demo/article/saveArticle",{money:money,title:title,describe:describe,urlPath:urlPath},function(res){
+            if(res.code==200){
+                alert(res.msg);
+                window.location.href="/ssm_Demo/home.html";
+            }
+        });
+    }
+
+    //监听表单数据，标题和筹款金额
+    function changeIntValue(item){
+        let lableId=$(item).attr("id");
+        let value=$(item).val();
+        switch (lableId) {
+            case "L_title":
+                if(value.length>50){
+                    $(item).val(value.substring(0,25));
+                    alert("限制最大输入50！！")
+                }
+                break;
+            case "L_content":
+                $(item).val(value.replace(/[^0-9]/g, ''));
+                break;
+        }
+    }
+</script>
+</html>
