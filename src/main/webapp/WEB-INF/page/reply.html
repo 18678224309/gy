@@ -4,7 +4,6 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>谁有laypage分页独立组件 - Fly社区</title>
     <meta name="description" content="">
     <link rel="stylesheet" href="/ssm_Demo/static/Fly/font_24081_qs69ykjbea.css">
     <link rel="stylesheet" href="/ssm_Demo/static/Fly/global.css" charset="utf-8">
@@ -23,7 +22,11 @@
                         src="/ssm_Demo${auth.avatar}" onclick='add("${auth.id}","${auth.name}",this)'  avatat="${auth.avatar}"> </a>
                     <div class="fly-detail-user"><a href="javaScript:void(0)" class="fly-link" onclick='add("${auth.id}","${auth.name}",this)' avatat="${auth.avatar}"> <cite>${auth.name}</cite>
                     </a> <span>${model.createtime?string("yyyy-MM-dd HH:mm:ss")}</span></div>
-                    <div class="detail-hits"><span style="padding-right: 10px; color: #FF7200">金额：${model.money}￥  &nbsp;&nbsp;&nbsp;&nbsp;已筹集：${model.moneynow}￥ </span></div>
+                    <div class="detail-hits"><span style="padding-right: 10px; color: #FF7200">金额：${model.money}￥  &nbsp;&nbsp;&nbsp;&nbsp;已筹集：${model.moneynow}￥ </span>
+                        <#if model.status==1>
+                                <button class="layui-btn layui-btn-normal layui-btn-xs" onclick="donate()">我要❥(^_-)</button>
+                        </#if>
+                    </div>
                 </div>
                 <div class="layui-btn-container fly-detail-admin" id="LAY_jieAdmin" data-id="59363">
                 </div>
@@ -147,6 +150,41 @@
             if(res.code==200){
                 alert(res.msg);
                 window.location.href="/ssm_Demo/article/reply.html?articleId="+articleid;
+            }
+        });
+    }
+    let JXHTML="<div class=\"layui-tab layui-tab-brief\" lay-filter=\"user\">\n" +
+        "    <ul class=\"layui-tab-title\" id=\"LAY_mine\">\n" +
+        "        <li class=\"layui-this\" lay-id=\"info\">爱心捐献</li>\n" +
+        "    </ul>\n" +
+        "    <div class=\"layui-tab-content\" style=\"padding: 20px 0;\">\n" +
+        "        <div class=\"layui-form layui-form-pane layui-tab-item layui-show\">\n" +
+        "            <div class=\"layui-form-item\">\n" +
+        "<label class=\"layui-form-label\">金额</label>\n" +
+        "    <div class=\"layui-input-block\">\n" +
+        "      <input type=\"number\" name=\"money\" id=\"money\" required  lay-verify=\"required\" placeholder=\"请输入金额\" autocomplete=\"off\" class=\"layui-input\">\n" +
+        "    </div>" +
+        "            </div>\n" +
+        "        </div>\n" +
+        "    </div>\n" +
+        "</div>";
+
+    function donate(){
+        layer.open({
+            type: 1
+            ,content: JXHTML
+            ,btn: '确定'
+            ,title:''
+            ,area: ['400px', '250px']
+            ,btnAlign: 'c' //按钮居中
+            ,shade: 0 //不显示遮罩
+            ,yes: function(){
+                 let articleid=$("#articleid").val();
+                 let money=$("#money").val();
+                 $.post("/ssm_Demo/article/updateArticle",{id:articleid,money:money},function (res) {
+                         alert(res.msg);
+                         window.location.href="/ssm_Demo/article/reply.html?articleId="+articleid;
+                 });
             }
         });
     }

@@ -182,7 +182,7 @@ public class MsgboxController {
             UserGroup userGroup=list.get(i);
             String[] uids=userGroup.getUids().split(",");
             for(int j=0;j<uids.length;j++){
-                if(uids[i].equals(user.getId().toString())){
+                if(uids[j].equals(user.getId().toString())){
                     return R.error("已经添加好友，请勿重复添加！");
                   }
             }

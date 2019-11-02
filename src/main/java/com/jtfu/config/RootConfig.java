@@ -3,7 +3,6 @@ package com.jtfu.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
-import com.baomidou.mybatisplus.extension.handlers.EnumTypeHandler;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import org.apache.ibatis.logging.stdout.StdOutImpl;
@@ -51,7 +50,6 @@ public class RootConfig {
     public MybatisSqlSessionFactoryBean sessionFactoryBean()throws IOException {
         MybatisSqlSessionFactoryBean factoryBean=new MybatisSqlSessionFactoryBean();
         MybatisConfiguration configuration=new MybatisConfiguration();
-        configuration.setDefaultEnumTypeHandler(EnumTypeHandler.class);
         configuration.setLogImpl(StdOutImpl.class);
         configuration.setCacheEnabled(true);
         factoryBean.setConfiguration(configuration);

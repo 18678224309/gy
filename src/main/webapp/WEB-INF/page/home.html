@@ -185,9 +185,15 @@
     //请求返回数据后绘制
     function drawTable(tableId,data){
         $(tableId).html("");
+        let label="";
         for(let i=0;i<data.length;i++){
+            if(data[i].status==1){
+                label="进行中";
+            }else{
+                label="已完结";
+            }
             let li="<li>\n" +
-                "                        <h2><a class=\"layui-badge\">筹款</a> <a href=\"javaScript:void(0)\" onclick=\"goDetilPage("+data[i].id+")\">"+data[i].title+"</a></h2>\n" +
+                "                        <h2><a class=\"layui-badge\">"+label+"</a> <a href=\"javaScript:void(0)\" onclick=\"goDetilPage("+data[i].id+")\">"+data[i].title+"</a></h2>\n" +
                 "                        <div class=\"fly-list-info\"><a href=\"javaScript:void(0)\" link=\"\">\n" +
                 "                            <cite>"+data[i].auth+"</cite> </a> <span>"+data[i].createtime+"</span>  <span class=\"fly-list-nums\"><i\n" +
                 "                                class=\"iconfont icon-pinglun1\" title=\"回复\"></i>"+data[i].replyNum+" </span></div>\n" +

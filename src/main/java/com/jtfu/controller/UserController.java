@@ -60,7 +60,7 @@ public class UserController {
         user.setDelFlag(0);
         user.setCreatetime(new Date());
         user.setSign("在深邃的编码世界，做一枚轻盈的纸飞机");
-        user.setAvatar("/ssm_Demo/static/image/80421574-D205-41EA-9631-C72CFDA90063.jpg");
+        user.setAvatar("/static/image/80421574-D205-41EA-9631-C72CFDA90063.jpg");
         boolean res = userService.save(user);
         return res;
     }

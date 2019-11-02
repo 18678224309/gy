@@ -30,4 +30,14 @@ public class HtmlController {
 
         return "userCenter";
     }
+
+    @GetMapping("/myArticle.html")
+    public String myArticleHtml(){
+        return "myArticle";
+    }
+
+    @GetMapping("audit.html")
+    public String auditHtml(){
+        return "audit";
+    }
 }

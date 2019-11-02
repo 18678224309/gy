@@ -17,13 +17,16 @@
     <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="user">
 
         <li class="layui-nav-item layui-this"><a href="/ssm_Demo/userCenter.html" target="iframe"> <i class="layui-icon"></i>
-            基本设置 </a></li>
-        <li class="layui-nav-item "><a href="https://fly.layui.com/user/post/"> <i class="iconfont icon-tiezi"></i> 我的帖子
+            基本设置</a></li>
+        <li class="layui-nav-item "><a href="/ssm_Demo/myArticle.html" target="iframe"> <i class="iconfont icon-tiezi"></i> 我的帖子
         </a></li>
     <!--    <li class="layui-nav-item "><a href="https://fly.layui.com/user/message/"> <i class="layui-icon"></i> 我的消息 </a>
         </li>-->
-        <li class="layui-nav-item "><a href="https://fly.layui.com/user/product/"> <i class="iconfont icon-chanpin"></i>
-            管理员审核 </a></li>
+            <#if Session.userInfo.roleid==1>
+                <li class="layui-nav-item "><a href="/ssm_Demo/audit.html" target="iframe"> <i class="iconfont icon-chanpin"></i>
+                    管理员审核</a>
+                </li>
+            </#if>
         <span class="layui-nav-bar" style="height: 0px; top: 302.5px; opacity: 0;"></span></ul>
     <div class="site-tree-mobile layui-hide"><i class="layui-icon"></i></div>
     <div class="site-mobile-shade">

@@ -121,7 +121,7 @@ public class ArticleController {
        }
         article.setPhotos(builder.toString());
         article.setCreatetime(new Date());
-        article.setStatus(1);
+        article.setStatus(-1);
         articleMapper.insert(article);
         return R.success();
     }
@@ -154,10 +154,31 @@ public class ArticleController {
                 queryWrapper.eq(fieldName,map.get(fieldName));
             }
         }
+        int authId=0;
+        if(map.containsKey("authId")){authId= Integer.valueOf((String) map.get("authId"));}
         List<Article> list=articleMapper.getArticleListPage((page.getCurrent()-1)*page.getSize(),page.getSize(),"createtime");
         page.setRecords(list);
         page.setTotal(articleMapper.selectCount(queryWrapper));
         return R.success().set("page",page);
+    }
+
+    @PostMapping("/getAudit")
+    @ResponseBody
+    public R getAudit(@RequestParam Map map){
+        Field[] fields= Article.class.getDeclaredFields();
+        QueryWrapper queryWrapper=new QueryWrapper();
+        Page page=new Page();
+        page.setCurrent(Long.valueOf(map.get("curr").toString()));
+        page.setSize(Long.valueOf( map.get("limit").toString()));
+
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            String fieldName = field.getName();
+            if (map.containsKey(fieldName)) {
+                queryWrapper.eq(fieldName, map.get(fieldName));
+            }
+        }
+        return R.success().set("page",articleMapper.selectPage(page,queryWrapper));
     }
 
     @PostMapping("/getHot")
@@ -190,6 +211,28 @@ public class ArticleController {
         }
 
         return R.success().set("SlideShow",list);
+    }
+
+    @PostMapping("/updateArticle")
+    @ResponseBody
+    public R updateArticle(@RequestParam Map map){
+        int id=Integer.valueOf(map.get("id").toString());
+        Article article= articleMapper.selectById(id);
+        if(article!=null&&map.get("status")!=null){
+            article.setStatus(Integer.valueOf(map.get("status").toString()));
+        }
+        if(article!=null&&map.get("money")!=null){
+           int money=Integer.valueOf(map.get("money").toString());
+           if(money>article.getMoney()-article.getMoneynow()){
+               return R.success("捐献失败！捐献金额大于所需金额！"+(article.getMoney()-article.getMoneynow()));
+           }
+           article.setMoneynow(article.getMoneynow()+money);//将当前金额进行更新;
+            if(article.getMoneynow().equals(article.getMoney())){
+                article.setStatus(0);
+            }
+        }
+        articleMapper.updateById(article);
+        return R.success();
     }
 
 
