@@ -39,8 +39,11 @@ public class Article implements Serializable {
 
     private String photos;
 
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createtime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private Date updatetime;
 
     private Integer status;
 
@@ -53,6 +56,14 @@ public class Article implements Serializable {
     @TableField(exist = false)
     private int replyNum;
 
+
+    public Date getUpdatetime() {
+        return updatetime;
+    }
+
+    public void setUpdatetime(Date updatetime) {
+        this.updatetime = updatetime;
+    }
 
     public int getReplyNum() {
         return replyNum;

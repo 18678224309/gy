@@ -115,7 +115,9 @@
 
             let data=JSON.parse(res.data);
             if(data.msgboxNum!=null&&data.msgboxNum!=undefined){
+                //显示消息盒子
                 layim.msgbox(data.msgboxNum);
+                //将还有添加至好友列表
                 if(data.user!=null&&data.user!=undefined){
                     //同意
                     let boxUser=data.user;
@@ -129,7 +131,13 @@
                     });
                 }
             }else{
-                layim.getMessage(data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
+                //如果好友不在线，进行提示
+               if(data.error!=null&&data.error!=undefined){
+                   alert(data.error);
+               }else{
+                   //好友在线打开聊天窗口
+                   layim.getMessage(data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
+               }
             }
         };
 

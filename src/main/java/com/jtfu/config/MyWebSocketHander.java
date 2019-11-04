@@ -64,14 +64,15 @@ public class MyWebSocketHander implements WebSocketHandler {
     }
 
     public void  sendMsgToUser(String msgContent) throws IOException {
+        //接受webSocket发送的消息，进行解析。如果发送到的好友在线将消息推送，不在线则提示发起人。
         JSONObject chat = JSON.parseObject(msgContent);
         JSONObject data=chat.getJSONObject("data");
         JSONObject mine=data.getJSONObject("mine");
         JSONObject to=data.getJSONObject("to");
         String mineId=mine.getString("id");
         String toId=to.getString("id");
+        Map msgMap=new HashMap();
         if(USER_ONLINE.containsKey(toId)){
-            Map msgMap=new HashMap();
             msgMap.put("username",mine.get("username"));
             msgMap.put("avatar",mine.get("avatar"));
             msgMap.put("id",mineId);
@@ -80,6 +81,11 @@ public class MyWebSocketHander implements WebSocketHandler {
             msgMap.put("timestamp",new Date());
             TextMessage testMsg = new TextMessage(JSON.toJSONString(msgMap));
             WebSocketSession session=USER_ONLINE.get(toId);
+            session.sendMessage(testMsg);
+        }else{
+            WebSocketSession session=USER_ONLINE.get(mineId);
+            msgMap.put("error","好友不在线！请稍后重试......");
+            TextMessage testMsg = new TextMessage(JSON.toJSONString(msgMap));
             session.sendMessage(testMsg);
         }
     }

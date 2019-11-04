@@ -26,12 +26,11 @@
             <li class="layui-nav-item" style="float: right">
                 <#if (Session.userInfo)??>
                         <a class="fly-nav-avatar"  href="/ssm_Demo/center.html" target="_blank">
-                            <cite class="layui-hide-xs"> ${Session.userInfo.name}</cite>
+                            <cite class="layui-hide-xs" style="padding-right: 20px"> ${Session.userInfo.name}</cite>
                             <img src=" /ssm_Demo${Session.userInfo.avatar}">
                             <dl class="layui-nav-child">
                                 <dd><a href="javascript:;" onclick="outLogin()">退出</a></dd>
                             </dl>
-                            <!-- <span class="layui-badge">1</span>-->
                         </a>
                 </#if>
             </li>

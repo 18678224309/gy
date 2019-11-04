@@ -39,7 +39,7 @@ public class ArticleController {
     @ResponseBody
     public R uoloadImg(@RequestPart("photos") MultipartFile photos,@RequestParam("url") String url, HttpServletRequest request) throws Exception {
         //当图片上传时会利用拿到的唯一key值作为文件夹，上传的图片存在这个文件夹中
-        String pathName=url+"/"+photos.getOriginalFilename();
+        String pathName=url+"/"+UUID.randomUUID().toString()+".jpg";
         System.err.println(pathName);
         File file=new File(pathName);
         OutputStream outputStream=new FileOutputStream(file);
@@ -55,9 +55,6 @@ public class ArticleController {
         //依据文章id，查询到文章内容
         Article article=articleMapper.selectById(articleId);
         User auth=userMapper.selectById(article.getAuthId());
-        String status=auth.getStatus();
-        status=status.equals("online")?"在线":"离线";
-        auth.setStatus(status);
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("articleid",articleId);
         List<Message> messages=messageMapper.selectList(queryWrapper);
@@ -68,13 +65,15 @@ public class ArticleController {
             Message message= messages.get(i);
             int userId= message.getReplyid();
             User user=userMapper.selectById(userId);
-            status=user.getStatus();
-            status=status.equals("online")?"在线":"离线";
-            user.setStatus(status);
             message.setUser(user);
             messages.set(i,message);
         }
         User user= (User) session.getAttribute("userInfo");
+        //判断当前登录的用户是否与帖子的作者相同,是：更新帖子的更新时间
+        if(user.getId().equals(article.getAuthId())){
+            article.setUpdatetime(new Date());
+            articleMapper.updateById(article);
+        }
         model.addAttribute("userInfo",user);
         model.addAttribute("model",article);
         model.addAttribute("messages",messages);
