@@ -20,4 +20,7 @@ public interface UserMapper extends BaseMapper<User> {
     @Select("select  a.id,a.username,a.name,a.avatar,IFNULL(b.count,0) replyNum from `user` a\n" +
             "left join (select replyid,count(1) count from message GROUP BY replyid) b on a.id=b.replyid ORDER BY replyNum desc LIMIT 0,30 ")
     List<User> getHotUser();
+
+
+
 }

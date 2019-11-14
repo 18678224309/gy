@@ -3,27 +3,23 @@ package com.jtfu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jtfu.entity.User;
-import com.jtfu.entity.UserGroup;
 import com.jtfu.mapper.UserMapper;
 import com.jtfu.service.IUserGroupService;
 import com.jtfu.service.IUserService;
-import com.jtfu.service.impl.UserServiceImpl;
 import com.jtfu.util.R;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
@@ -45,6 +41,10 @@ public class UserController {
     UserMapper userMapper;
     @Autowired
     IUserGroupService userGroupService;
+    @Autowired
+    FileSystem fsSource;
+    @Value("${imageServer}")
+    String imageServer;
     /*注册*/
     @RequestMapping("/register")
     public boolean register(@RequestParam("username")String username,@RequestParam("password")String pwd,@RequestParam("phone")String phone){
@@ -60,7 +60,7 @@ public class UserController {
         user.setDelFlag(0);
         user.setCreatetime(new Date());
         user.setSign("在深邃的编码世界，做一枚轻盈的纸飞机");
-        user.setAvatar("/static/image/80421574-D205-41EA-9631-C72CFDA90063.jpg");
+        user.setAvatar(imageServer+"/webhdfs/v1/gyImg/default.jpg?op=open&user.name=root");
         boolean res = userService.save(user);
         return res;
     }
@@ -172,11 +172,13 @@ public class UserController {
             outputStream.write(photo.getBytes());
             outputStream.flush();
             outputStream.close();
-            String subPath=imgPath.substring(imgPath.indexOf("\\static"),imgPath.length());
-            user.setAvatar(subPath);
+            //String subPath=imgPath.substring(imgPath.indexOf("\\static"),imgPath.length());
+            fsSource.copyFromLocalFile(new Path(imgPath),new Path("/gyImg"));
+            String hadoopImgPath=imageServer+"/webhdfs/v1/gyImg/"+photo.getOriginalFilename()+"?op=open&user.name=root";
+            user.setAvatar(hadoopImgPath);
             userMapper.updateById(user);
             request.getSession().setAttribute("userInfo",user);
-            return R.success().set("imgPath",subPath);
+            return R.success().set("imgPath",hadoopImgPath);
         }
         return R.error();
     }

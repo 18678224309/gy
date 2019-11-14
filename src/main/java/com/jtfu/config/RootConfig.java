@@ -5,6 +5,8 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.ibatis.logging.stdout.StdOutImpl;
 import org.apache.ibatis.plugin.Interceptor;
 import org.mybatis.spring.annotation.MapperScan;
@@ -16,6 +18,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.net.URI;
 
 @MapperScan("com.jtfu.mapper")
 @PropertySource("classpath:db.properties")
@@ -29,6 +32,8 @@ public class RootConfig {
     String Password;
     @Value("${db.username}")
     String Username;
+    @Value("${hadoopIp}")
+    String hadoopIp;
     @Bean
     public DataSource dataSource(){
         DruidDataSource dataSource=new DruidDataSource();
@@ -67,6 +72,15 @@ public class RootConfig {
         PaginationInterceptor paginationInterceptor=new PaginationInterceptor();
         paginationInterceptor.setDialectType("mysql");
         return paginationInterceptor;
+    }
+    @Bean
+    public FileSystem fileSystem() throws IOException, InterruptedException {
+        Configuration conf = new Configuration();
+        // 获取配置文件对象
+        conf.set("fs.defaultFS", "hdfs://"+hadoopIp+":9000");
+        conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
+        FileSystem fsSource = FileSystem.get(URI.create("hdfs://"+hadoopIp+":9000"), conf, "root");
+        return fsSource;
     }
      /*  @Bean
     public PerformanceInterceptor performanceInterceptor(){

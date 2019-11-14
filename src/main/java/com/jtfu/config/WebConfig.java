@@ -26,6 +26,8 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebMvcConfigur
 
     @Value("${ws}")
     String ws;
+    @Value("${imageServer}")
+    String imageServer;
     /*配置静态资源的处理*/
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
@@ -62,6 +64,7 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebMvcConfigur
         configurer.setFreemarkerSettings(properties);
         Map map=new HashMap();
         map.put("ws",ws);
+        map.put("imageServer",imageServer);
         configurer.setFreemarkerVariables(map);//为freemarker设置全局参数；
         return configurer;
     }

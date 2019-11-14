@@ -19,7 +19,7 @@
                 <input type="hidden" value="${model.id}" id="articleid"/>
                 <div class="fly-detail-info"></div>
                 <div class="detail-about"><a class="fly-avatar" href="javaScript:void(0)"> <img
-                        src="/ssm_Demo${auth.avatar}" onclick='add("${auth.id}","${auth.name}",this)'  avatat="${auth.avatar}"> </a>
+                        src="${auth.avatar}" onclick='add("${auth.id}","${auth.name}",this)'  avatat="${auth.avatar}"> </a>
                     <div class="fly-detail-user"><a href="javaScript:void(0)" class="fly-link" onclick='add("${auth.id}","${auth.name}",this)' avatat="${auth.avatar}"> <cite>${auth.name}</cite>
                     </a> <span>${model.createtime?string("yyyy-MM-dd HH:mm:ss")}</span></div>
                     <div class="detail-hits"><span style="padding-right: 10px; color: #FF7200">金额：${model.money}￥  &nbsp;&nbsp;&nbsp;&nbsp;已筹集：${model.moneynow}￥ </span>
@@ -35,7 +35,7 @@
                     <#assign layer = model.photos?split(",")/>
                     <#list layer as path>
                         <#if path!=''>
-                            <img src="/ssm_Demo${path}" style="width: 80%;height: 500px;margin-left: 5%;margin-top: 2%">
+                            <img src="${path}" style="width: 80%;height: 500px;margin-left: 5%;margin-top: 2%">
                         </#if>
                     </#list>
                 </div>
@@ -49,7 +49,7 @@
                             <li data-id="206148"><a name="item-1572567678484"></a>
                                 <div class="detail-about detail-about-reply">
                                     <a class="fly-avatar"  href="javaScript:void(0)"> <img
-                                            src="/ssm_Demo${message.user.avatar}" alt="${message.user.name}" onclick='add("${message.user.id}","${message.user.name}",this)' avatat="${message.user.avatar}"> </a>
+                                            src="${message.user.avatar}" alt="${message.user.name}" onclick='add("${message.user.id}","${message.user.name}",this)' avatat="${message.user.avatar}"> </a>
                                     <div class="fly-detail-user"><a href="javaScript:void(0)" onclick='add("${message.user.id}","${message.user.name}",this)' avatat="${message.user.avatar}" class="fly-link">
                                         <cite>${message.user.name}</cite> </a></div>
                                     <div class="detail-hits"><span>${message.createtime?string("yyyy-MM-dd HH:mm:ss")}</span></div>
@@ -199,7 +199,7 @@
 
     function add(uid,name,item){
         //实际使用时数据由动态获得
-        let imgPath="/ssm_Demo"+$(item).attr("avatat");
+        let imgPath=$(item).attr("avatat");
         layim.add({
             type: 'friend'
             ,username: name

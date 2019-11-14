@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-<!-- saved from url=(0031)https://fly.layui.com/user/set/ -->
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>帐号设置 - Fly社区</title>
     <link rel="stylesheet" href="/ssm_Demo/static/Fly/font_24081_qs69ykjbea.css">
     <link rel="stylesheet" href="/ssm_Demo/static/dist/css/layui.css">
     <link rel="stylesheet" href="/ssm_Demo/static/Fly/global.css" charset="utf-8">
@@ -65,7 +63,7 @@
                 <div class="avatar-add"><p>建议尺寸168*168，支持jpg、png、gif，最大不能超过50KB</p>
                     <button type="button" class="layui-btn upload-img" id="L_img">
                         <i class="layui-icon"></i>上传头像</button>
-                    <img src="/ssm_Demo${Session.userInfo.avatar}" id="photo"> <span class="loading"></span>
+                    <img src="${Session.userInfo.avatar}" id="photo"> <span class="loading"></span>
                 </div>
             </div>
         </div>
@@ -102,7 +100,7 @@
                    ,done: function(res, index, upload){
                       //假设code=0代表上传成功
                       if(res.code == 200){
-                          $("#photo").attr("src","/ssm_Demo/"+res.imgPath);
+                          $("#photo").attr("src",res.imgPath);
                       }
                   }
                 });

@@ -92,9 +92,9 @@ public class WebSocketController {
                 userW.isNotNull("status");
                 userW.orderByDesc("status");
                 List<User> lists=userService.list(userW);
-                for(int j=0;j<lists.size();j++){
+               /* for(int j=0;j<lists.size();j++){
                     lists.get(j).setAvatar("/ssm_Demo/"+lists.get(j).getAvatar());
-                }
+                }*/
                itemGroup.setList(lists);
                friendList.set(i,itemGroup);
             }

@@ -27,7 +27,7 @@
                 <#if (Session.userInfo)??>
                         <a class="fly-nav-avatar"  href="/ssm_Demo/center.html" target="_blank">
                             <cite class="layui-hide-xs" style="padding-right: 20px"> ${Session.userInfo.name}</cite>
-                            <img src=" /ssm_Demo${Session.userInfo.avatar}">
+                            <img src="${Session.userInfo.avatar}">
                             <dl class="layui-nav-child">
                                 <dd><a href="javascript:;" onclick="outLogin()">退出</a></dd>
                             </dl>
@@ -118,7 +118,7 @@
         $.post("/ssm_Demo/article/getSlideShow",{},function(res){
             let SlideShow=res.SlideShow;
             for (let i=0;i<SlideShow.length;i++){
-                $("#carousel_item").append("<img src='/ssm_Demo/"+SlideShow[i].photos+"' style='cursor:pointer;width: 100%;height: 300px;' onclick='goDetilPage("+SlideShow[i].id+")'>");
+                $("#carousel_item").append("<img src='"+SlideShow[i].photos+"' style='cursor:pointer;width: 100%;height: 300px;' onclick='goDetilPage("+SlideShow[i].id+")'>");
             }
             //常规轮播
             carousel.render({
@@ -155,7 +155,7 @@
         $.post('/ssm_Demo/user/getHotUser',{},function(res){
             let userHot=res.userHot;
             for(let i=0;i<=userHot.length;i++){
-                let hot="<dd><a href='javaScript:void(0)' ><img src='/ssm_Demo"+userHot[i].avatar+"'><cite>"+userHot[i].name+"</cite><i>"+userHot[i].replyNum+"次回复</i></a></dd>";
+                let hot="<dd><a href='javaScript:void(0)' ><img src='"+userHot[i].avatar+"'><cite>"+userHot[i].name+"</cite><i>"+userHot[i].replyNum+"次回复</i></a></dd>";
                 $("#userHot").append(hot);
             }
         });

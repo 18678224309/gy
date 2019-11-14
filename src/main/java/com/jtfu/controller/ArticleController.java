@@ -11,7 +11,10 @@ import com.jtfu.mapper.MessageMapper;
 import com.jtfu.mapper.UserMapper;
 import com.jtfu.service.IArticleService;
 import com.jtfu.util.R;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +37,10 @@ public class ArticleController {
     MessageMapper messageMapper;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    FileSystem fsSource;
+    @Value("${imageServer}")
+    String imageServer;
 
     @PostMapping("/uoloadImg")
     @ResponseBody
@@ -97,7 +104,7 @@ public class ArticleController {
 
     @PostMapping("/saveArticle")
     @ResponseBody
-    public R saveArticle(String title,String describe,int money,String urlPath,HttpSession session){
+    public R saveArticle(String title,String describe,int money,String urlPath,HttpSession session) throws IOException {
         User user= (User) session.getAttribute("userInfo");
         //保存数据接口，接收标题，描述，筹集金额，上传图片的地址;
         Article article=new Article();
@@ -112,10 +119,19 @@ public class ArticleController {
         int index= urlPath.indexOf("\\static");
        if(files!=null){
            String imgPath=urlPath.substring(index,urlPath.length());
+           //hadoop创建节点
+           String hadoopDir="/gyImg/"+imgPath.substring(14);
+           fsSource.mkdirs(new Path(hadoopDir));
            for(int i=0;i<files.length;i++){
                File f=files[i];
-               builder.append(imgPath+"\\"+f.getName());
+               String copyPath=urlPath+"/"+f.getName();
+               String hadoopPath=hadoopDir+"/"+f.getName();
+               builder.append(imageServer+"/webhdfs/v1"+hadoopPath+"?op=open&user.name=root");
                builder.append(",");
+               //复制文件到hadoop
+               System.out.println("copyPath:"+copyPath);
+               System.out.println("hadoopDir:"+hadoopDir);
+               fsSource.copyFromLocalFile(new Path(copyPath),new Path(hadoopDir));
            }
        }
         article.setPhotos(builder.toString());
