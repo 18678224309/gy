@@ -20,7 +20,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +37,7 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
+    private static List<HttpSession> list=new ArrayList<>();
     @Autowired
     IUserService userService;
     @Autowired
@@ -77,7 +80,9 @@ public class UserController {
             user.setStatus("online");
             userService.updateById(user);
             session.setAttribute("userInfo",user);
+            list.add(session);
         }
+        System.err.println(list.size());
         return res;
     }
 
