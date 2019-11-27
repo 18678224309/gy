@@ -169,9 +169,9 @@ public class ArticleController {
                 queryWrapper.eq(fieldName,map.get(fieldName));
             }
         }
-        int authId=0;
-        if(map.containsKey("authId")){authId= Integer.valueOf((String) map.get("authId"));}
-        List<Article> list=articleMapper.getArticleListPage((page.getCurrent()-1)*page.getSize(),page.getSize(),"createtime");
+        /*int authId=0;
+        if(map.containsKey("authId")){authId= Integer.valueOf((String) map.get("authId"));}*/
+        List<Article> list=articleMapper.getArticleListPage((page.getCurrent()-1)*page.getSize(),page.getSize(),"createtime", (String) map.get("status"));
         page.setRecords(list);
         page.setTotal(articleMapper.selectCount(queryWrapper));
         return R.success().set("page",page);
@@ -199,7 +199,7 @@ public class ArticleController {
     @PostMapping("/getHot")
     @ResponseBody
     public R getHot(){
-        List<Article> list=articleMapper.getArticleListPage(0,20,"replyNum");
+        List<Article> list=articleMapper.getArticleListPage(0,20,"replyNum",null);
         return R.success().set("hotList",list);
     }
 
