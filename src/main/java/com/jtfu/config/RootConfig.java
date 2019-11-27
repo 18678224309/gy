@@ -77,9 +77,10 @@ public class RootConfig {
     public FileSystem fileSystem() throws IOException, InterruptedException {
         Configuration conf = new Configuration();
         // 获取配置文件对象
-        conf.set("fs.defaultFS", "hdfs://"+hadoopIp+":9000");
+        conf.set("fs.defaultFS", "hdfs://node:9000");
+        conf.set("dfs.client.use.datanode.hostname", "true");
         conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
-        FileSystem fsSource = FileSystem.get(URI.create("hdfs://"+hadoopIp+":9000"), conf, "root");
+        FileSystem fsSource = FileSystem.get(URI.create("hdfs://node:9000"), conf, "root");
         return fsSource;
     }
      /*  @Bean
