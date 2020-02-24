@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/ssm_Demo/static/dist/css/layui.css">
+    <link rel="stylesheet" href="/static/dist/css/layui.css">
     <style>
         html{
             width: 100%;
@@ -57,7 +57,7 @@
                 <li class="layui-nav-item">
                     <a href="javascript:;">
                         <#if (Session.userInfo)??>
-                        <img src="/ssm_Demo${Session.userInfo.avatar}" class="layui-nav-img">
+                        <img src="${Session.userInfo.avatar}" class="layui-nav-img">
                         ${Session.userInfo.name}
                     </#if>
                     </a>
@@ -73,7 +73,7 @@
 
     </div>
 </body>
-<script src="/ssm_Demo/static/dist/layui.js"></script>
+<script src="/static/dist/layui.js"></script>
 <script>
     //JavaScript代码区域
      let layer;
@@ -86,10 +86,10 @@
         layim = layui.layim;
         layim.config({
             init: {
-                url: '/ssm_Demo/webSocket/getList', //接口地址（返回的数据格式见下文）
+                url: '/webSocket/getList', //接口地址（返回的数据格式见下文）
             } //获取主面板列表信息，下文会做进一步介绍
 
-            ,msgbox: '/ssm_Demo/static/dist/css/modules/layim/html/msgbox.html?userId='+userId //消息盒子页面地址，若不开启，剔除该项即可
+            ,msgbox: '/static/dist/css/modules/layim/html/msgbox.html?userId='+userId //消息盒子页面地址，若不开启，剔除该项即可
         });
 
         let socket = new WebSocket('${ws}/webSocket?userId='+userId);
@@ -125,7 +125,7 @@
 
          //监听layim建立就绪 获得未读取的消息;
          layim.on('ready', function(res){
-             $.get('/ssm_Demo/msgbox/getMsgCount',{uid:userId},function(res){
+             $.get('/msgbox/getMsgCount',{uid:userId},function(res){
                  if(res>0){
                      layim.msgbox(res);
                  }
@@ -153,10 +153,10 @@
             ,yes: function(index, layero){
                 let articleid=$("#articleid").val();
                 let message=$("#message").val();
-                $.post('/ssm_Demo/message/addMessage',{articleid:articleid,message:message},function(res){
+                $.post('/message/addMessage',{articleid:articleid,message:message},function(res){
                     if(res.code==200){
                         alert(res.msg);
-                        window.location.href="/ssm_Demo/article/article.html?articleId="+articleid;
+                        window.location.href="/article/article.html?articleId="+articleid;
                     }
                 });
             }
@@ -179,7 +179,7 @@
             ,avatar: avatar
             ,submit: function(group, remark, index){
                 //通知对方
-                $.post('/ssm_Demo/msgbox/add', {
+                $.post('/msgbox/add', {
                     uid: uid
                     ,from_group: group
                     ,remark: remark
@@ -202,12 +202,12 @@
     //退出登录
     function outLogin(){
         $.ajax({
-            url: "/ssm_Demo/user/outLogin",
+            url: "/user/outLogin",
             async: true,
             data:"",
             success: function(data) {
                 console.log("data");
-                location.href = "/ssm_Demo/index.html";
+                location.href = "/index.html";
             },
             type: "post",
             dataType: "json"

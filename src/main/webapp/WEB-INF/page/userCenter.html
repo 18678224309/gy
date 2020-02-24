@@ -3,11 +3,11 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="stylesheet" href="/ssm_Demo/static/Fly/font_24081_qs69ykjbea.css">
-    <link rel="stylesheet" href="/ssm_Demo/static/dist/css/layui.css">
-    <link rel="stylesheet" href="/ssm_Demo/static/Fly/global.css" charset="utf-8">
-    <script src="/ssm_Demo/static/Fly/hm.js.下载"></script>
-    <link id="layuicss-layer" rel="stylesheet" href="/ssm_Demo/static/dist/css/modules/layer/default/layer.css" media="all">
+    <link rel="stylesheet" href="/static/Fly/font_24081_qs69ykjbea.css">
+    <link rel="stylesheet" href="/static/dist/css/layui.css">
+    <link rel="stylesheet" href="/static/Fly/global.css" charset="utf-8">
+    <script src="/static/Fly/hm.js.下载"></script>
+    <link id="layuicss-layer" rel="stylesheet" href="/static/dist/css/modules/layer/default/layer.css" media="all">
     <style>
         body{
             background-color: #FFFFFF;
@@ -79,8 +79,8 @@
         </div>
     </div>
 </div>
-<script src="/ssm_Demo/static/dist/layui.js"></script>
-<script src="/ssm_Demo/static/jquery/jquery.min.js"></script>
+<script src="/static/dist/layui.js"></script>
+<script src="/static/jquery/jquery.min.js"></script>
 </body>
 <script>
     layui.use(['element','upload'], function(){
@@ -91,7 +91,7 @@
                 //执行实例
               upload.render({
                     elem: '#L_img' //绑定元素
-                    ,url: '/ssm_Demo/user/uploadImg' //上传接口
+                    ,url: '/user/uploadImg' //上传接口
                     ,accept:'images'
                     ,acceptMime: 'image/*'
                     ,field:'photo'
@@ -111,7 +111,7 @@
         let L_sign=$("#L_sign").val();
         let L_username=$("#L_username").val();
         let password=$("#password").val();
-        $.post("/ssm_Demo/user/updateUser",{id:uid,sign:L_sign,name:L_username,password:password},function(res){
+        $.post("/user/updateUser",{id:uid,sign:L_sign,name:L_username,password:password},function(res){
             alert(res.msg);
         });
     }

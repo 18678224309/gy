@@ -5,25 +5,25 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>帐号设置 - Fly社区</title>
-    <link rel="stylesheet" href="/ssm_Demo/static/Fly/font_24081_qs69ykjbea.css">
-    <link rel="stylesheet" href="/ssm_Demo/static/dist/css/layui.css">
-    <link rel="stylesheet" href="/ssm_Demo/static/Fly/global.css" charset="utf-8">
-    <script src="/ssm_Demo/static/Fly/hm.js.下载"></script>
-    <link id="layuicss-layer" rel="stylesheet" href="/ssm_Demo/static/dist/css/modules/layer/default/layer.css" media="all">
+    <link rel="stylesheet" href="/static/Fly/font_24081_qs69ykjbea.css">
+    <link rel="stylesheet" href="/static/dist/css/layui.css">
+    <link rel="stylesheet" href="/static/Fly/global.css" charset="utf-8">
+    <script src="/static/Fly/hm.js.下载"></script>
+    <link id="layuicss-layer" rel="stylesheet" href="/static/dist/css/modules/layer/default/layer.css" media="all">
 </head>
 <body>
 
 <div class="layui-container fly-marginTop fly-user-main">
     <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="user">
 
-        <li class="layui-nav-item layui-this"><a href="/ssm_Demo/userCenter.html" target="iframe"> <i class="layui-icon"></i>
+        <li class="layui-nav-item layui-this"><a href="/userCenter.html" target="iframe"> <i class="layui-icon"></i>
             基本设置</a></li>
-        <li class="layui-nav-item "><a href="/ssm_Demo/myArticle.html" target="iframe"> <i class="iconfont icon-tiezi"></i> 我的帖子
+        <li class="layui-nav-item "><a href="/myArticle.html" target="iframe"> <i class="iconfont icon-tiezi"></i> 我的帖子
         </a></li>
     <!--    <li class="layui-nav-item "><a href="https://fly.layui.com/user/message/"> <i class="layui-icon"></i> 我的消息 </a>
         </li>-->
             <#if Session.userInfo.roleid==1>
-                <li class="layui-nav-item "><a href="/ssm_Demo/audit.html" target="iframe"> <i class="iconfont icon-chanpin"></i>
+                <li class="layui-nav-item "><a href="/audit.html" target="iframe"> <i class="iconfont icon-chanpin"></i>
                     管理员审核</a>
                 </li>
             </#if>
@@ -33,14 +33,14 @@
     </div>
 
     <div class="fly-panel fly-panel-user" pad20="">
-        <iframe width="100%"  frameborder="no" scrolling="no" src="/ssm_Demo/userCenter.html" id="iframe" name="iframe">
+        <iframe width="100%"  frameborder="no" scrolling="no" src="/userCenter.html" id="iframe" name="iframe">
 
         </iframe>
     </div>
 </div>
 
-<script src="/ssm_Demo/static/Fly/layui.js.下载"></script>
-<script src="/ssm_Demo/static/jquery/jquery.min.js"></script>
+<script src="/static/Fly/layui.js.下载"></script>
+<script src="/static/jquery/jquery.min.js"></script>
 </body>
 <script>
     //fly-panel fly-panel-user

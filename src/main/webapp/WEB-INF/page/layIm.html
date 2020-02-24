@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/ssm_Demo/static/dist/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/dist/css/layui.css" media="all">
 </head>
 <body>
 
 </body>
-<script src="/ssm_Demo/static/dist/layui.js"></script>
+<script src="/static/dist/layui.js"></script>
 <script>
     layui.use('layim', function(layim){
         //基础配置
@@ -30,13 +30,13 @@
                 ,type: 'post' //默认post
             }
 
-            ,msgbox: '/ssm_Demo/static/dist/css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
-            ,find: '/ssm_Demo/static/dist/css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
-            ,chatLog: '/ssm_Demo/static/dist/css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
+            ,msgbox: '/static/dist/css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
+            ,find: '/static/dist/css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
+            ,chatLog: '/static/dist/css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
 
         });
         let userId='${userId}';
-        let socket = new WebSocket('ws://192.168.8.48:8080/ssm_Demo/webSocket?userId='+userId);
+        let socket = new WebSocket('ws://192.168.8.48:8080/webSocket?userId='+userId);
         layim.on('sendMessage', function(res){
             let mine = res.mine; //包含我发送的消息及我的信息
             let to = res.to; //对方的信息

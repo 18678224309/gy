@@ -4,11 +4,11 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="stylesheet" href="/ssm_Demo/static/Fly/font_24081_qs69ykjbea.css">
-    <link rel="stylesheet" href="/ssm_Demo/static/dist/css/layui.css">
-    <link rel="stylesheet" href="/ssm_Demo/static/Fly/global.css" charset="utf-8">
-    <script src="/ssm_Demo/static/Fly/hm.js.下载"></script>
-    <link id="layuicss-layer" rel="stylesheet" href="/ssm_Demo/static/dist/css/modules/layer/default/layer.css" media="all">
+    <link rel="stylesheet" href="/static/Fly/font_24081_qs69ykjbea.css">
+    <link rel="stylesheet" href="/static/dist/css/layui.css">
+    <link rel="stylesheet" href="/static/Fly/global.css" charset="utf-8">
+    <script src="/static/Fly/hm.js.下载"></script>
+    <link id="layuicss-layer" rel="stylesheet" href="/static/dist/css/modules/layer/default/layer.css" media="all">
     <style>
         body{
             background-color: #FFFFFF;
@@ -24,23 +24,26 @@
     <div class="layui-tab-content" style="padding: 20px 0;">
         <div class="layui-form layui-form-pane layui-tab-item layui-show">
             <div class="layui-form-item">
-                <table class="layui-hide" id="articleTable"></table>
+                <table class="layui-hide" id="articleTable" lay-filter="articleTable"></table>
             </div>
         </div>
     </div>
 </div>
-<script src="/ssm_Demo/static/dist/layui.js"></script>
-<script src="/ssm_Demo/static/jquery/jquery.min.js"></script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete" >删除</a>
+</script>
+<script src="/static/dist/layui.js"></script>
+<script src="/static/jquery/jquery.min.js"></script>
 </body>
 <script>
     layui.use('table', function(){
         var table = layui.table;
         let userId='${Session.userInfo.id}';
-        table.render({
+        let options={
             elem: '#articleTable'
-            ,url:'/ssm_Demo/article/getAudit/'
+            ,url:'/article/getAudit/'
             ,cols: [[
-                 {field:'id', width:80, title: 'ID'}
+                {field:'id', width:80, title: 'ID'}
                 ,{field:'title',  minWidth:300, title: '标题'}
                 ,{field:'money', width:120, title: '筹集金额'}
                 ,{field:'moneynow', width:120, title: '当前金额'}
@@ -53,6 +56,7 @@
                         else if(status==2){return '未通过'}
                         else {return "待审核"}
                     }}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:80}
             ]]
             ,page: true
             ,method:'post'
@@ -61,7 +65,7 @@
                 pageName: 'curr' //页码的参数名称，默认：page
             },response: {
                 statusCode: 200 //规定成功的状态码，默认：0
-                ,countName: 'total' //规定数据总数的字段名称，默认：count
+             /*   ,countName: 'total' //规定数据总数的字段名称，默认：count*/
             },parseData: function(res){ //res 即为原始返回的数据
                 let page=res.page;
                 return {
@@ -71,6 +75,19 @@
                     "data": page.records //解析数据列表
                 };
             }
+        };
+        table.render(options);
+
+        //工具栏事件
+        table.on('tool(articleTable)', function(obj){
+            let data=obj.data;
+            $.post("/article/deleteArticle",{id:data.id},function(res){
+                if(res.code==500){
+                    alert(res.msg);
+                }else if(res.code==200){
+                    table.reload("articleTable",options);
+                }
+            });
         });
     });
 </script>

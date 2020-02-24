@@ -73,7 +73,7 @@ public class RootConfig {
         paginationInterceptor.setDialectType("mysql");
         return paginationInterceptor;
     }
-    @Bean
+  /*  @Bean
     public FileSystem fileSystem() throws IOException, InterruptedException {
         Configuration conf = new Configuration();
         // 获取配置文件对象
@@ -82,7 +82,7 @@ public class RootConfig {
         conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
         FileSystem fsSource = FileSystem.get(URI.create("hdfs://node:9000"), conf, "root");
         return fsSource;
-    }
+    }*/
      /*  @Bean
     public PerformanceInterceptor performanceInterceptor(){
         //格式化sql语句

@@ -44,8 +44,6 @@ public class UserController {
     UserMapper userMapper;
     @Autowired
     IUserGroupService userGroupService;
-    @Autowired
-    FileSystem fsSource;
     @Value("${imageServer}")
     String imageServer;
     /*注册*/
@@ -63,27 +61,27 @@ public class UserController {
         user.setDelFlag(0);
         user.setCreatetime(new Date());
         user.setSign("在深邃的编码世界，做一枚轻盈的纸飞机");
-        user.setAvatar(imageServer+"/webhdfs/v1/gyImg/default.jpg?op=open&user.name=root");
+        user.setAvatar("/ssm_Demo/static/image/default.jpg");
         boolean res = userService.save(user);
         return res;
     }
     /*登录*/
     @RequestMapping("/login")
-    public int login(@RequestParam("username")String uname, @RequestParam("password")String pwd, HttpSession session){
-        System.out.println(uname+"-----"+pwd);
+    public R login(@RequestParam("username")String uname, @RequestParam("password")String pwd, HttpSession session){
         QueryWrapper qw = new QueryWrapper();
         qw.eq("username",uname);
         qw.eq("password",pwd);
-        int res = userService.count(qw);
-        if(res == 1){
-            User user = userService.getOne(qw);
+        User user = userService.getOne(qw);
+        if(user!=null){
             user.setStatus("online");
             userService.updateById(user);
             session.setAttribute("userInfo",user);
             list.add(session);
+            System.out.println(session.getAttribute("userInfo").toString());
+            return R.success();
+        }else{
+            return R.error("用户名或密码不正确！");
         }
-        System.err.println(list.size());
-        return res;
     }
 
     /*判断用户名和电话是否重复*/
@@ -125,12 +123,13 @@ public class UserController {
     public void outLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session=request.getSession();
         User user = (User)session.getAttribute("userInfo");
-        //修改登陆状态
-        user.setStatus("offline");
-        QueryWrapper qw = new QueryWrapper();
-        boolean isOffline = userService.updateById(user);
-        session.removeAttribute("userInfo");
-        request.getRequestDispatcher("/index.html").forward(request, response);
+        if(user!=null){
+            //修改登陆状态
+            user.setStatus("offline");
+            session.removeAttribute("userInfo");
+        }
+        //request.getRequestDispatcher("/index.html").forward(request, response);
+        response.sendRedirect("/index.html");
     }
 
     //完善个人信息
@@ -165,21 +164,21 @@ public class UserController {
     @PostMapping("/uploadImg")
     public R uploadImg(@RequestParam("uid")int uid,@RequestParam("photo")MultipartFile photo, HttpServletRequest request) throws IOException {
         String staticPath=request.getRealPath("static");
-        String path=staticPath+"\\image\\"+uid;
+        String path=staticPath+"/image/";
         User user=userMapper.selectById(uid);
         if(user!=null){
             File file=new File(path);
             if(!file.exists()){
                 file.mkdir();
             }
-            String imgPath=path+"\\"+photo.getOriginalFilename();
+            String imgPath=path+"/"+photo.getOriginalFilename();
             OutputStream outputStream=new FileOutputStream(new File(imgPath));
             outputStream.write(photo.getBytes());
             outputStream.flush();
             outputStream.close();
-            //String subPath=imgPath.substring(imgPath.indexOf("\\static"),imgPath.length());
-            fsSource.copyFromLocalFile(new Path(imgPath),new Path("/gyImg"));
-            String hadoopImgPath=imageServer+"/webhdfs/v1/gyImg/"+photo.getOriginalFilename()+"?op=open&user.name=root";
+            //String subPath=imgPath.substring(imgPath.indexOf("/static"),imgPath.length());
+            //fsSource.copyFromLocalFile(new Path(imgPath),new Path("/gyImg"));
+            String hadoopImgPath="/static/image/"+photo.getOriginalFilename()+"";
             user.setAvatar(hadoopImgPath);
             userMapper.updateById(user);
             request.getSession().setAttribute("userInfo",user);

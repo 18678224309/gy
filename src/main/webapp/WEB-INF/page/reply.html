@@ -5,85 +5,141 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="description" content="">
-    <link rel="stylesheet" href="/ssm_Demo/static/Fly/font_24081_qs69ykjbea.css">
-    <link rel="stylesheet" href="/ssm_Demo/static/Fly/global.css" charset="utf-8">
-    <script src="/ssm_Demo/static/Fly//hm.js.下载"></script>
-    <link id="layuicss-layer" rel="stylesheet" href="/ssm_Demo/static/dist/css/modules/layer/default/layer.css" media="all">
-    <link rel="stylesheet" href="/ssm_Demo/static/dist/css/layui.css">
+    <link rel="stylesheet" href="/static/Fly/font_24081_qs69ykjbea.css">
+    <link rel="stylesheet" href="/static/Fly/global.css" charset="utf-8">
+    <script src="/static/Fly//hm.js.下载"></script>
+    <link id="layuicss-layer" rel="stylesheet" href="/static/dist/css/modules/layer/default/layer.css" media="all">
+    <link rel="stylesheet" href="/static/dist/css/layui.css">
+    <style>
+        .pageLeft{
+            width: 300px;
+            position: absolute;
+            left: -350px;
+            top: 20px;
+        }
+    </style>
 </head>
 <body>
-<div class="layui-container">
-    <div class="layui-row layui-col-space15">
-        <div class="layui-col-md12 content detail">
-            <div class="fly-panel detail-box"><h1>${model.title}</h1>
-                <input type="hidden" value="${model.id}" id="articleid"/>
-                <div class="fly-detail-info"></div>
-                <div class="detail-about"><a class="fly-avatar" href="javaScript:void(0)"> <img
-                        src="${auth.avatar}" onclick='add("${auth.id}","${auth.name}",this)'  avatat="${auth.avatar}"> </a>
-                    <div class="fly-detail-user"><a href="javaScript:void(0)" class="fly-link" onclick='add("${auth.id}","${auth.name}",this)' avatat="${auth.avatar}"> <cite>${auth.name}</cite>
-                    </a> <span>${model.createtime?string("yyyy-MM-dd HH:mm:ss")}</span></div>
-                    <div class="detail-hits"><span style="padding-right: 10px; color: #FF7200">金额：${model.money}￥  &nbsp;&nbsp;&nbsp;&nbsp;已筹集：${model.moneynow}￥ </span>
-                        <#if model.status==1>
-                                <button class="layui-btn layui-btn-normal layui-btn-xs" onclick="donate()">我要❥(^_-)</button>
-                        </#if>
-                    </div>
+<div class="layui-main">
+            <div class="layui-container">
+                <div class="pageLeft">
+                    <ul class="layui-timeline">
+                        <li class="layui-timeline-item">
+                            <i class="layui-icon layui-timeline-axis"></i>
+                            <div class="layui-timeline-content layui-text">
+                                <h3 class="layui-timeline-title">8月18日</h3>
+                                <p>
+                                    layui 2.0 的一切准备工作似乎都已到位。发布之弦，一触即发。
+                                    <br>不枉近百个日日夜夜与之为伴。因小而大，因弱而强。
+                                    <br>无论它能走多远，抑或如何支撑？至少我曾倾注全心，无怨无悔 <i class="layui-icon"></i>
+                                </p>
+                            </div>
+                        </li>
+                        <li class="layui-timeline-item">
+                            <i class="layui-icon layui-timeline-axis"></i>
+                            <div class="layui-timeline-content layui-text">
+                                <h3 class="layui-timeline-title">8月16日</h3>
+                                <p>杜甫的思想核心是儒家的仁政思想，他有<em>“致君尧舜上，再使风俗淳”</em>的宏伟抱负。个人最爱的名篇有：</p>
+                                <ul>
+                                    <li>《登高》</li>
+                                    <li>《茅屋为秋风所破歌》</li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="layui-timeline-item">
+                            <i class="layui-icon layui-timeline-axis"></i>
+                            <div class="layui-timeline-content layui-text">
+                                <h3 class="layui-timeline-title">8月15日</h3>
+                                <p>
+                                    中国人民抗日战争胜利日
+                                    <br>常常在想，尽管对这个国家有这样那样的抱怨，但我们的确生在了最好的时代
+                                    <br>铭记、感恩
+                                    <br>所有为中华民族浴血奋战的英雄将士
+                                    <br>永垂不朽
+                                </p>
+                            </div>
+                        </li>
+                        <li class="layui-timeline-item">
+                            <i class="layui-icon layui-timeline-axis"></i>
+                            <div class="layui-timeline-content layui-text">
+                                <div class="layui-timeline-title">过去</div>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
-                <div class="layui-btn-container fly-detail-admin" id="LAY_jieAdmin" data-id="59363">
-                </div>
-                <div class="detail-body layui-text photos">
-                    ${model.describe} <br>
-                    <#assign layer = model.photos?split(",")/>
-                    <#list layer as path>
-                        <#if path!=''>
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md12 content detail">
+                        <div class="fly-panel detail-box"><h1>${model.title}</h1>
+                            <input type="hidden" value="${model.id}" id="articleid"/>
+                            <div class="fly-detail-info"></div>
+                            <div class="detail-about"><a class="fly-avatar" href="javaScript:void(0)"> <img
+                                    src="${auth.avatar}" onclick='add("${auth.id}","${auth.name}",this)'  avatat="${auth.avatar}"> </a>
+                                <div class="fly-detail-user"><a href="javaScript:void(0)" class="fly-link" onclick='add("${auth.id}","${auth.name}",this)' avatat="${auth.avatar}"> <cite>${auth.name}</cite>
+                                </a> <span>${model.createtime?string("yyyy-MM-dd HH:mm:ss")}</span></div>
+                                <div class="detail-hits"><span style="padding-right: 10px; color: #FF7200">金额：${model.money}￥  &nbsp;&nbsp;&nbsp;&nbsp;已筹集：${model.moneynow}￥ </span>
+                                    <#if model.status==1>
+                                    <button class="layui-btn layui-btn-normal layui-btn-xs" onclick="donate()">捐款</button>
+                                </#if>
+                            </div>
+                        </div>
+                        <div class="layui-btn-container fly-detail-admin" id="LAY_jieAdmin" data-id="59363">
+                        </div>
+                        <div class="detail-body layui-text photos">
+                            ${model.describe} <br>
+                            <#assign layer = model.photos?split(",")/>
+                            <#list layer as path>
+                            <#if path!=''>
                             <img src="${path}" style="width: 80%;height: 500px;margin-left: 5%;margin-top: 2%">
                         </#if>
                     </#list>
                 </div>
             </div>
+            <#if model.status==1>
             <div class="fly-panel detail-box" id="flyReply">
                 <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">
                     <legend>回帖</legend>
                 </fieldset>
                 <ul class="jieda" id="jieda">
                     <#list messages as message>
-                            <li data-id="206148"><a name="item-1572567678484"></a>
-                                <div class="detail-about detail-about-reply">
-                                    <a class="fly-avatar"  href="javaScript:void(0)"> <img
-                                            src="${message.user.avatar}" alt="${message.user.name}" onclick='add("${message.user.id}","${message.user.name}",this)' avatat="${message.user.avatar}"> </a>
-                                    <div class="fly-detail-user"><a href="javaScript:void(0)" onclick='add("${message.user.id}","${message.user.name}",this)' avatat="${message.user.avatar}" class="fly-link">
-                                        <cite>${message.user.name}</cite> </a></div>
-                                    <div class="detail-hits"><span>${message.createtime?string("yyyy-MM-dd HH:mm:ss")}</span></div>
-                                </div>
-                                <div class="detail-body layui-text jieda-body photos">
-                                    ${message.message}
-                                </div>
-                                <div class="jieda-reply"><span class="jieda-zan " type="zan">
-                                </div>
-                            </li>
-                    </#list>
+                    <li data-id="206148"><a name="item-1572567678484"></a>
+                        <div class="detail-about detail-about-reply">
+                            <a class="fly-avatar"  href="javaScript:void(0)"> <img
+                                    src="${message.user.avatar}" alt="${message.user.name}" onclick='add("${message.user.id}","${message.user.name}",this)' avatat="${message.user.avatar}"> </a>
+                            <div class="fly-detail-user"><a href="javaScript:void(0)" onclick='add("${message.user.id}","${message.user.name}",this)' avatat="${message.user.avatar}" class="fly-link">
+                                <cite>${message.user.name}</cite> </a></div>
+                            <div class="detail-hits"><span>${message.createtime?string("yyyy-MM-dd HH:mm:ss")}</span></div>
+                        </div>
+                        <div class="detail-body layui-text jieda-body photos">
+                            ${message.message}
+                        </div>
+                        <div class="jieda-reply"><span class="jieda-zan " type="zan">
+                        </div>
+                    </li>
+                </#list>
                 </ul>
                 <div style="text-align: center"></div>
                 <a name="comment"> </a>
                 <div class="layui-form layui-form-pane">
-                        <div class="layui-form-item layui-form-text">
-                            <div class="layui-input-block">
-                                <div class="layui-unselect fly-edit"></div>
-                                <textarea id="message" name="content" required="" lay-verify="required"
-                                          placeholder="请输入内容" class="layui-textarea fly-editor"
-                                          style="height: 150px;"></textarea></div>
-                        </div>
-                        <div class="layui-form-item"><input type="hidden" name="jid" value="59363"> <input type="hidden"
-                                                                                                           name="daPages"
-                                                                                                           value="1">
-                            <button class="layui-btn" onclick="submit()">提交回复</button>
-                        </div>
+                    <div class="layui-form-item layui-form-text">
+                        <div class="layui-input-block">
+                            <div class="layui-unselect fly-edit"></div>
+                            <textarea id="message" name="content" required="" lay-verify="required"
+                                      placeholder="请输入内容" class="layui-textarea fly-editor"
+                                      style="height: 150px;"></textarea></div>
+                    </div>
+                    <div class="layui-form-item"><input type="hidden" name="jid" value="59363"> <input type="hidden"
+                                                                                                       name="daPages"
+                                                                                                       value="1">
+                        <button class="layui-btn" onclick="submit()">提交回复</button>
+                    </div>
                 </div>
             </div>
         </div>
-
-    </div>
+        </#if>
+        </div>
+        </div>
 </div>
-<script src="/ssm_Demo/static/dist/layui.js"></script>
+<script src="/static/dist/layui.js"></script>
 </body>
 <script>
     let layer;
@@ -96,10 +152,10 @@
         layim = layui.layim;
         layim.config({
             init: {
-                url: '/ssm_Demo/webSocket/getList', //接口地址（返回的数据格式见下文）
+                url: '/webSocket/getList', //接口地址（返回的数据格式见下文）
             } //获取主面板列表信息，下文会做进一步介绍
 
-            ,msgbox: '/ssm_Demo/static/dist/css/modules/layim/html/msgbox.html?userId='+userId //消息盒子页面地址，若不开启，剔除该项即可
+            ,msgbox: '/static/dist/css/modules/layim/html/msgbox.html?userId='+userId //消息盒子页面地址，若不开启，剔除该项即可
         });
 
         let socket = new WebSocket('${ws}/webSocket?userId='+userId);
@@ -143,7 +199,7 @@
 
         //监听layim建立就绪 获得未读取的消息;
         layim.on('ready', function(res){
-            $.get('/ssm_Demo/msgbox/getMsgCount',{uid:userId},function(res){
+            $.get('/msgbox/getMsgCount',{uid:userId},function(res){
                 if(res>0){
                     layim.msgbox(res);
                 }
@@ -154,10 +210,10 @@
     function submit() {
         let articleid=$("#articleid").val();
         let message=$("#message").val();
-        $.post('/ssm_Demo/message/addMessage',{articleid:articleid,message:message},function(res){
+        $.post('/message/addMessage',{articleid:articleid,message:message},function(res){
             if(res.code==200){
                 alert(res.msg);
-                window.location.href="/ssm_Demo/article/reply.html?articleId="+articleid;
+                window.location.href="/article/reply.html?articleId="+articleid;
             }
         });
     }
@@ -189,9 +245,9 @@
             ,yes: function(){
                  let articleid=$("#articleid").val();
                  let money=$("#money").val();
-                 $.post("/ssm_Demo/article/updateArticle",{id:articleid,money:money},function (res) {
+                 $.post("/article/updateArticle",{id:articleid,money:money},function (res) {
                          alert(res.msg);
-                         window.location.href="/ssm_Demo/article/reply.html?articleId="+articleid;
+                         window.location.href="/article/reply.html?articleId="+articleid;
                  });
             }
         });
@@ -206,7 +262,7 @@
             ,avatar:imgPath
             ,submit: function(group, remark, index){
                 //通知对方
-                $.post('/ssm_Demo/msgbox/add', {
+                $.post('/msgbox/add', {
                     uid: uid
                     ,from_group: group
                     ,remark: remark
@@ -225,5 +281,6 @@
             }
         });
     }
+
 </script>
 </html>

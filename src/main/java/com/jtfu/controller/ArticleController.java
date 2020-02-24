@@ -37,17 +37,23 @@ public class ArticleController {
     MessageMapper messageMapper;
     @Autowired
     UserMapper userMapper;
-    @Autowired
-    FileSystem fsSource;
-    @Value("${imageServer}")
-    String imageServer;
+
+    private Map<String,List> photoMaps=new HashMap<>();
 
     @PostMapping("/uoloadImg")
     @ResponseBody
     public R uoloadImg(@RequestPart("photos") MultipartFile photos,@RequestParam("url") String url, HttpServletRequest request) throws Exception {
+        List list= photoMaps.get(url);
         //当图片上传时会利用拿到的唯一key值作为文件夹，上传的图片存在这个文件夹中
         String pathName=url+"/"+UUID.randomUUID().toString()+".jpg";
-        System.err.println(pathName);
+        if(list!=null){
+            list.add(pathName);
+        }else{
+            list=new ArrayList();
+            list.add(pathName);
+            photoMaps.put(url,list);
+        }
+        //System.err.println(pathName);
         File file=new File(pathName);
         OutputStream outputStream=new FileOutputStream(file);
         outputStream.write(photos.getBytes());
@@ -94,7 +100,7 @@ public class ArticleController {
         //在前端进行图片上传时，选定图片就已经上传了，此时需要与正在输入的数据绑定，所以返回一个唯一的key值；
         String uuid=UUID.randomUUID().toString();
         String staticPath=request.getRealPath("static");
-        String path=staticPath+"\\image\\"+uuid;
+        String path=staticPath+"/image/"+uuid;
         File file=new File(path);
         if(!file.exists()){
             file.mkdir();
@@ -113,28 +119,42 @@ public class ArticleController {
         article.setAuthId(user.getId());
         article.setMoney(money);
         article.setDescribe(describe);
-        File file=new File(urlPath);
+       /* File file=new File(urlPath);
         File[] files=file.listFiles();
         StringBuilder builder=new StringBuilder();
-        int index= urlPath.indexOf("\\static");
+        int index= urlPath.indexOf("/static");
        if(files!=null){
            String imgPath=urlPath.substring(index,urlPath.length());
            //hadoop创建节点
-           String hadoopDir="/gyImg/"+imgPath.substring(14);
-           fsSource.mkdirs(new Path(hadoopDir));
+           //String hadoopDir="/gyImg/"+imgPath.substring(14);
+           //fsSource.mkdirs(new Path(hadoopDir));
            for(int i=0;i<files.length;i++){
                File f=files[i];
-               String copyPath=urlPath+"/"+f.getName();
-               String hadoopPath=hadoopDir+"/"+f.getName();
-               builder.append(imageServer+"/webhdfs/v1"+hadoopPath+"?op=open&user.name=root");
+               String copyPath="/"+imgPath+"/"+f.getName();
+             //  String hadoopPath=hadoopDir+"/"+f.getName();
+               builder.append(copyPath);
                builder.append(",");
                //复制文件到hadoop
                System.out.println("copyPath:"+copyPath);
-               System.out.println("hadoopDir:"+hadoopDir);
-               fsSource.copyFromLocalFile(new Path(copyPath),new Path(hadoopDir));
+               //System.out.println("hadoopDir:"+hadoopDir);
+               //fsSource.copyFromLocalFile(new Path(copyPath),new Path(hadoopDir));
            }
-       }
-        article.setPhotos(builder.toString());
+       }*/
+        if(photoMaps.containsKey(urlPath)){
+            StringBuilder builder=new StringBuilder();
+            List<String> list=photoMaps.get(urlPath);
+            for(int i=0;i<list.size();i++){
+                String path=list.get(i);
+                System.out.println(path+"================Path");
+                int index= path.indexOf("/static");
+                String copyPath=path.substring(index,path.length());
+                builder.append(copyPath);
+                builder.append(",");
+            }
+            article.setPhotos(builder.toString());
+            photoMaps.remove(urlPath);
+        }
+
         article.setCreatetime(new Date());
         article.setStatus(-1);
         articleMapper.insert(article);
@@ -185,12 +205,11 @@ public class ArticleController {
         Page page=new Page();
         page.setCurrent(Long.valueOf(map.get("curr").toString()));
         page.setSize(Long.valueOf( map.get("limit").toString()));
-
         for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
-            String fieldName = field.getName();
-            if (map.containsKey(fieldName)) {
-                queryWrapper.eq(fieldName, map.get(fieldName));
+            Field field= fields[i];
+            String fieldName=field.getName();
+            if(map.containsKey(fieldName)){
+                queryWrapper.eq(fieldName,map.get(fieldName));
             }
         }
         return R.success().set("page",articleMapper.selectPage(page,queryWrapper));
@@ -201,6 +220,19 @@ public class ArticleController {
     public R getHot(){
         List<Article> list=articleMapper.getArticleListPage(0,20,"replyNum",null);
         return R.success().set("hotList",list);
+    }
+
+    @PostMapping("/deleteArticle")
+    @ResponseBody
+    public R deleteArticle(int id){
+        Article article= articleMapper.selectById(id);
+        if(article!=null&&article.getMoneynow()==0){
+            articleMapper.deleteById(id);
+            return R.success();
+        }else if(article!=null&&article.getMoneynow()>0){
+            return R.error("无法删除！已经发起筹集金额："+article.getMoneynow());
+        }
+        return R.error();
     }
 
     @PostMapping("/getSlideShow")

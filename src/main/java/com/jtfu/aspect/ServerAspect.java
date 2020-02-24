@@ -26,15 +26,13 @@ public class ServerAspect {
     public Object  Before(ProceedingJoinPoint pjp) throws Throwable {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest retValue = attributes.getRequest();
-        HttpServletResponse response= attributes.getResponse();
+        HttpServletResponse response=attributes.getResponse();
         MethodSignature signature= (MethodSignature) pjp.getSignature();
         System.out.println(signature.getMethod().getName());
         User user = (User) retValue.getSession().getAttribute("userInfo");
         System.err.println(user+"=====================");
         if (user == null) {
-            /*response.sendRedirect("/ssm_Demo/");
-            return null;*/
-            retValue.getRequestDispatcher("/index.html").forward(retValue, response);
+            response.sendRedirect("/index.html");
             return null;
         }
         return pjp.proceed();

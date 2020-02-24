@@ -4,11 +4,11 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="stylesheet" href="/ssm_Demo/static/Fly/font_24081_qs69ykjbea.css">
-    <link rel="stylesheet" href="/ssm_Demo/static/dist/css/layui.css">
-    <link rel="stylesheet" href="/ssm_Demo/static/Fly/global.css" charset="utf-8">
-    <script src="/ssm_Demo/static/Fly/hm.js.下载"></script>
-    <link id="layuicss-layer" rel="stylesheet" href="/ssm_Demo/static/dist/css/modules/layer/default/layer.css" media="all">
+    <link rel="stylesheet" href="/static/Fly/font_24081_qs69ykjbea.css">
+    <link rel="stylesheet" href="/static/dist/css/layui.css">
+    <link rel="stylesheet" href="/static/Fly/global.css" charset="utf-8">
+    <script src="/static/Fly/hm.js.下载"></script>
+    <link id="layuicss-layer" rel="stylesheet" href="/static/dist/css/modules/layer/default/layer.css" media="all">
     <style>
         body{
             background-color: #FFFFFF;
@@ -20,6 +20,7 @@
 <div class="layui-tab layui-tab-brief" lay-filter="user">
     <ul class="layui-tab-title" id="LAY_mine">
         <li class="layui-this" lay-id="info">待审核</li>
+        <li lay-id="allArticle">进行中</li>
     </ul>
     <div class="layui-tab-content" style="padding: 20px 0;">
         <div class="layui-form layui-form-pane layui-tab-item layui-show">
@@ -27,25 +28,40 @@
                 <table class="layui-hide" id="articleTable" lay-filter="articleTable"></table>
             </div>
         </div>
+
+
+        <div class="layui-form layui-form-pane layui-tab-item">
+            <div class="layui-form-item">
+                <table class="layui-hide" id="articleTable2" lay-filter="articleTable2"></table>
+            </div>
+        </div>
+
     </div>
 </div>
 <script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="look" >查看</a>
     <a class="layui-btn layui-btn-xs" lay-event="pass" >通过</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="reject" >拒绝</a>
 </script>
-<script src="/ssm_Demo/static/dist/layui.js"></script>
-<script src="/ssm_Demo/static/jquery/jquery.min.js"></script>
+<script type="text/html" id="barDemo2">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="look" >查看</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete" >删除</a>
+</script>
+<script src="/static/dist/layui.js"></script>
+<script src="/static/jquery/jquery.min.js"></script>
 </body>
 <script>
 
-    layui.use('table', function(){
-        var table = layui.table;
+    layui.use(['table','element'],function(){
+        let table = layui.table;
+        let table2 = layui.table;
+        let element=layui.element;
         let options={
             elem: '#articleTable'
-            ,url:'/ssm_Demo/article/getAudit/'
+            ,url:'/article/getAudit/'
             ,cols: [[
                 {field:'id', width:80, title: 'ID'}
-                ,{field:'title',  minWidth:300, title: '标题'}
+                ,{field:'title', title: '标题'}
                 ,{field:'money', width:120, title: '筹集金额'}
                 ,{field:'moneynow', width:120, title: '当前金额'}
                 ,{field:'createtime', title: '创建时间',width:120}
@@ -56,7 +72,7 @@
                         }else if(status==1){return '进行中'}
                         else {return '待审核'}
                     }}
-                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:120}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:180}
             ]]
             ,page: true
             ,method:'post'
@@ -65,9 +81,10 @@
                 pageName: 'curr' //页码的参数名称，默认：page
             },response: {
                 statusCode: 200 //规定成功的状态码，默认：0
-                ,countName: 'total' //规定数据总数的字段名称，默认：count
+              /*  ,countName: 'total' //规定数据总数的字段名称，默认：count*/
             },parseData: function(res){ //res 即为原始返回的数据
                 let page=res.page;
+                console.log(res);
                 return {
                     "code": res.code, //解析接口状态
                     "msg": res.msg, //解析提示文本
@@ -76,14 +93,54 @@
                 };
             }
         };
-        table.render(options);
 
+        let options2={
+            elem: '#articleTable2'
+            ,url:'/article/getList/'
+            ,cols: [[
+                {field:'id', width:80, title: 'ID'}
+                ,{field:'title', title: '标题'}
+                ,{field:'money', width:120, title: '筹集金额'}
+                ,{field:'moneynow', width:120, title: '当前金额'}
+                ,{field:'createtime', title: '创建时间',width:120}
+                ,{field:'status', width:120, title: '当前状态',templet:function (d) {
+                        let status=d.status;
+                        if(status==0){
+                            return '完结';
+                        }else if(status==1){return '进行中'}
+                        else {return '待审核'}
+                    }}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo2', width:180}
+            ]]
+            ,page: true
+            ,method:'post'
+            ,where:{status:1}
+            ,request: {
+                pageName: 'curr' //页码的参数名称，默认：page
+            },response: {
+                statusCode: 200 //规定成功的状态码，默认：0
+               /* ,countName: 'total' //规定数据总数的字段名称，默认：count*/
+            },parseData: function(res){ //res 即为原始返回的数据
+                let page=res.page;
+                console.log(res);
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count":page.total,
+                    "data": page.records //解析数据列表
+                };
+            }
+        };
+        table.render(options);
+        table2.render(options2);
         //工具栏事件
         table.on('tool(articleTable)', function(obj){
-            console.log(obj);
             let data=obj.data;
             let status=0;
             switch(obj.event){
+                case 'look':
+                    goDetilPage(data.id);
+                    return;
                 case 'pass':
                     status=1;
                     break;
@@ -91,10 +148,34 @@
                     status=2
                     break;
             };
-            $.post("/ssm_Demo/article/updateArticle",{id:data.id,status:status},function(res){
+            $.post("/article/updateArticle",{id:data.id,status:status},function(res){
                     table.reload("articleTable",options);
             });
         });
+
+        //工具栏事件
+        table2.on('tool(articleTable2)', function(obj){
+            let data=obj.data;
+            switch(obj.event){
+                case 'look':
+                    goDetilPage(data.id);
+                    return;
+                case 'delete':
+                    $.post("/article/deleteArticle",{id:data.id},function(res){
+                        if(res.code==500){
+                            alert(res.msg);
+                        }else if(res.code==200){
+                            table.reload("articleTable2",options2);
+                        }
+                    });
+                    break;
+            };
+        });
     });
+
+    //转到详细页面
+    function goDetilPage(articleId){
+        window.open("/article/reply.html?articleId="+articleId);
+    }
 </script>
 </html>
