@@ -56,6 +56,77 @@ public class Article implements Serializable {
     @TableField(exist = false)
     private int replyNum;
 
+    private int typeid;
+
+    private String typename;
+
+    private String jgname;
+
+
+    private String phone;
+
+
+    private String addr;
+
+
+    @TableField(exist = false)
+    private String urlPath;
+
+    public String getUrlPath() {
+        return urlPath;
+    }
+
+    public void setUrlPath(String urlPath) {
+        this.urlPath = urlPath;
+    }
+
+    public String getDescribes() {
+        return describes;
+    }
+
+    public void setDescribes(String describes) {
+        this.describes = describes;
+    }
+
+    public int getTypeid() {
+        return typeid;
+    }
+
+    public void setTypeid(int typeid) {
+        this.typeid = typeid;
+    }
+
+    public String getTypename() {
+        return typename;
+    }
+
+    public void setTypename(String typename) {
+        this.typename = typename;
+    }
+
+    public String getJgname() {
+        return jgname;
+    }
+
+    public void setJgname(String jgname) {
+        this.jgname = jgname;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAddr() {
+        return addr;
+    }
+
+    public void setAddr(String addr) {
+        this.addr = addr;
+    }
 
     public Date getUpdatetime() {
         return updatetime;

@@ -4,6 +4,7 @@ import com.jtfu.entity.User;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
@@ -13,8 +14,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Aspect
-@Component
+
 public class ServerAspect {
 
     @Pointcut("execution(* com.jtfu.controller..*.*(..)) && !execution(* com.jtfu.controller.UserController.*(..))")
@@ -22,7 +22,7 @@ public class ServerAspect {
 
     }
 
-    @Around("PointCut()")
+    //@Before("PointCut()")
     public Object  Before(ProceedingJoinPoint pjp) throws Throwable {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest retValue = attributes.getRequest();

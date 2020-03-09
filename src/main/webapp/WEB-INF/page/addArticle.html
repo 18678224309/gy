@@ -19,23 +19,66 @@
                 <ul class="layui-tab-title">
                     <li class="layui-this">发表新帖</li>
                 </ul>
-                <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
-                    <div class="layui-tab-item layui-show">
+
+
+                <form class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
 
                             <div class="layui-row layui-col-space15 layui-form-item">
 
-                                <div class="layui-col-md9"><label for="L_title" class="layui-form-label">标题</label>
-                                    <div class="layui-input-block"><input type="text" id="L_title" name="title"
-                                                                          required="" lay-verify="required"
-                                                                          autocomplete="off" class="layui-input" oninput="changeIntValue(this)"></div>
+                                <div class="layui-col-md9"><label class="layui-form-label">标题</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="title" lay-verify="required" autocomplete="off" class="layui-input">
+                                    </div>
                                 </div>
                             </div>
 
+                            <div class="layui-row layui-col-space15 layui-form-item">
+
+                                <div class="layui-col-md9"><label class="layui-form-label">项目类型</label>
+                                    <div class="layui-input-inline">
+                                        <select name="typeid" lay-verify="required">
+                                            <option value="1">医疗</option>
+                                            <option value="2">教育</option>
+                                            <option value="3">文化</option>
+                                            <option value="4">科技</option>
+                                            <option value="5">环境生态</option>
+                                            <option value="6">救灾减灾</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-row layui-col-space15 layui-form-item">
+
+                                <div class="layui-col-md9"><label  class="layui-form-label">机构名称</label>
+                                    <div class="layui-input-block">
+                                        <input type="text"  name="jgname" lay-verify="required" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-row layui-col-space15 layui-form-item">
+
+                                <div class="layui-col-md9"><label class="layui-form-label">联系电话</label>
+                                    <div class="layui-input-block">
+                                        <input type="text"  name="phone" lay-verify="required|phone" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-row layui-col-space15 layui-form-item">
+
+                                <div class="layui-col-md9"><label class="layui-form-label">联系地址</label>
+                                    <div class="layui-input-block">
+                                        <input type="text"  name="addr" lay-verify="required" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
                             <div class="layui-row layui-form-item">
                                 <div class="layui-col-md3"><label class="layui-form-label">筹集金额</label>
-                                    <div class="layui-input-block"><input type="number" id="L_money" name="title"
-                                                                          required="" lay-verify="required"
-                                                                          autocomplete="off" class="layui-input" oninput="changeIntValue(this)"></div>
+                                    <div class="layui-input-block"><input type="text"  name="money"
+                                                                          required="" lay-verify="required|number"
+                                                                          autocomplete="off" class="layui-input"></div>
                                 </div>
                             </div>
                             <div class="layui-form-item layui-form-text">
@@ -49,93 +92,76 @@
                                     <div class="layui-unselect fly-edit"><span
                                             type="picture" title="图片：img[src]">
                                         <i class="iconfont icon-tupian" id="L_img"></i></span></div>
-                                    <textarea id="L_content" name="content" required="" lay-verify="required"
+                                    <textarea id="L_content" name="describes" required=""
                                               placeholder="详细描述" class="layui-textarea fly-editor"
                                               style="height: 260px;"></textarea>
                                 </div>
                             </div>
 
                             <div class="layui-form-item">
-                                <button class="layui-btn" onclick="submit()">立即发布</button>
+                                <button class="layui-btn" lay-submit lay-filter="*">立即发布</button>
                             </div>
 
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 <input type="hidden" id="urlPath" value="">
 </body>
-<script src="/static/dist/layui.js"></script>
-<script src="/static/jquery/jquery.min.js"></script>
+<script src="/static/dist/layui.all.js"></script>
 <script>
-    layui.use('upload', function(){
-        var upload = layui.upload;
+    var $=layui.jquery;
+    var form=layui.form;
+    var upload=layui.upload;
 
-        //执行实例
-        var uploadInst = upload.render({
-            elem: '#L_img' //绑定元素
-            ,url: '/article/uoloadImg' //上传接口
-            ,accept:'images'
-            ,acceptMime: 'image/*'
-            ,field:'photos'
-            ,multiple: true  //多文件上传
-            ,data:{url:function(){
-                    return $("#urlPath").val();
-                }}
-            ,before: function(obj){
-                let urlPathVal=$("#urlPath").val();
-                if(urlPathVal===""){
-                    $.ajax({
-                        url:'/article/genKey',async:false,type:"POST",success:function(res){
-                            $("#urlPath").val(res.key);
-                        }
-                    });
-                }
-                //预读本地文件示例，不支持ie8
-                obj.preview(function(index, file, result){
-                    //alert(result);
-                    $('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img" style="width: 100px;height: 100px">')
+    //执行实例
+    var uploadInst = upload.render({
+        elem: '#L_img' //绑定元素
+        ,url: '/article/uoloadImg' //上传接口
+        ,accept:'images'
+        ,acceptMime: 'image/*'
+        ,field:'photos'
+        ,multiple: true  //多文件上传
+        ,data:{url:function(){
+                return $("#urlPath").val();
+            }}
+        ,before: function(obj){
+            let urlPathVal=$("#urlPath").val();
+            if(urlPathVal===""){
+                $.ajax({
+                    url:'/article/genKey',async:false,type:"POST",success:function(res){
+                        $("#urlPath").val(res.key);
+                    }
                 });
             }
-        });
+            //预读本地文件示例，不支持ie8
+            obj.preview(function(index, file, result){
+                $('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img" style="width: 100px;height: 100px">')
+            });
+        }
     });
-    function transNtoBr(str) {
-        var reg = new RegExp("\n", "g");
-        str = str.replace(reg, "<br/>");
-        return str;
-    }
-    function submit(){
-        var money=$("#L_money").val();
-        var title=$("#L_title").val();
-        var describe=$("#L_content").val();
+
+    //自定义验证规则
+    form.verify({
+        title: [
+            /^[\S]{50}$/
+            ,'标题长度不可超过50！'
+        ]
+    });
+
+    form.on('submit(*)', function(data){
+        var field = data.field; //当前容器的全部表单字段，名值对形式：{name: value}
         var urlPath=$("#urlPath").val();
-        //describe=describe.replace("\r\n","</br>").replace("\n","</br>");
-        describe=transNtoBr(describe);
-        $.post("/article/saveArticle",{money:money,title:title,describe:describe,urlPath:urlPath},function(res){
+        field.urlPath=urlPath;
+        $.post("/article/saveArticle",field,function(res){
             if(res.code==200){
                 alert(res.msg);
-                window.location.href="/home.html";
+                window.close();
             }
         });
-    }
+        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+    });
 
-    //监听表单数据，标题和筹款金额
-    function changeIntValue(item){
-        let lableId=$(item).attr("id");
-        let value=$(item).val();
-        switch (lableId) {
-            case "L_title":
-                if(value.length>50){
-                    $(item).val(value.substring(0,50));
-                    alert("限制最大输入50！！")
-                }
-                break;
-            case "L_money":
-                $(item).val(value.replace(/[^0-9]/g, ''));
-                break;
-        }
-    }
 </script>
 </html>

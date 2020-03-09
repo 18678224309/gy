@@ -2,6 +2,7 @@ package com.jtfu.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jtfu.entity.Article;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -19,6 +20,6 @@ import java.util.Map;
  */
 public interface ArticleMapper extends BaseMapper<Article> {
 
-     List<Article> getArticleListPage(@Param("begin")long begin,@Param("end")long end,@Param("order")String order,@Param("status") String status);
+     IPage<Article> getArticleListPage(IPage page,@Param("art") Article article,@Param("orderBy") String orderBy);
 
 }

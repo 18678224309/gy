@@ -87,7 +87,7 @@
   //请求消息
   var renderMsg = function(page, callback){
     //实际部署时，请将下述 getmsg.json 改为你的接口地址
-    $.get('/ssm_Demo/msgbox/getMsgboxByUid', {
+    $.get('/msgbox/getMsgboxByUid', {
       page:1,
       uid:userId
     }, function(res){
@@ -119,7 +119,7 @@
   });
 
   //打开页面即把消息标记为已读
-  $.get('/ssm_Demo/msgbox/yd', {
+  $.get('/msgbox/yd', {
     uid: userId
   });
   //操作
@@ -154,7 +154,7 @@
         
         
           //实际部署时，请开启下述注释，并改成你的接口地址
-          $.post('/ssm_Demo/msgbox/agreeFriend', {
+          $.post('/msgbox/agreeFriend', {
              uid: uid //对方用户ID
             ,from_group: from_group //对方设定的好友分组
             ,group: group //我设定的好友分组
@@ -188,7 +188,7 @@
       ,uid = li.data('uid');
       var msgboxid=othis.attr("msgboxid")
       layer.confirm('确定拒绝吗？', function(index){
-        $.post('/ssm_Demo/msgbox/refuse', {
+        $.post('/msgbox/refuse', {
           uid: uid, //对方用户ID
           from: userId, //自己的用户id
           msgboxid:msgboxid

@@ -2,15 +2,19 @@ package com.jtfu.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jtfu.entity.Article;
+import com.jtfu.entity.Artrecord;
 import com.jtfu.entity.Message;
 import com.jtfu.entity.User;
 import com.jtfu.mapper.ArticleMapper;
+import com.jtfu.mapper.ArtrecordMapper;
 import com.jtfu.mapper.MessageMapper;
 import com.jtfu.mapper.UserMapper;
 import com.jtfu.service.IArticleService;
 import com.jtfu.util.R;
+import com.jtfu.util.ServletUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +42,14 @@ public class ArticleController {
     @Autowired
     UserMapper userMapper;
 
+    @Autowired
+    ArtrecordMapper artrecordMapper;
+
     private Map<String,List> photoMaps=new HashMap<>();
 
     @PostMapping("/uoloadImg")
     @ResponseBody
-    public R uoloadImg(@RequestPart("photos") MultipartFile photos,@RequestParam("url") String url, HttpServletRequest request) throws Exception {
+    public R uoloadImg(@RequestPart("photos") MultipartFile photos,@RequestParam("url") String url) throws Exception {
         List list= photoMaps.get(url);
         //当图片上传时会利用拿到的唯一key值作为文件夹，上传的图片存在这个文件夹中
         String pathName=url+"/"+UUID.randomUUID().toString()+".jpg";
@@ -53,7 +60,6 @@ public class ArticleController {
             list.add(pathName);
             photoMaps.put(url,list);
         }
-        //System.err.println(pathName);
         File file=new File(pathName);
         OutputStream outputStream=new FileOutputStream(file);
         outputStream.write(photos.getBytes());
@@ -99,8 +105,8 @@ public class ArticleController {
     public R genKey(HttpServletRequest request){
         //在前端进行图片上传时，选定图片就已经上传了，此时需要与正在输入的数据绑定，所以返回一个唯一的key值；
         String uuid=UUID.randomUUID().toString();
-        String staticPath=request.getRealPath("static");
-        String path=staticPath+"/image/"+uuid;
+        String staticPath=request.getRealPath("/");
+        String path=staticPath+"/static/image/"+uuid;
         File file=new File(path);
         if(!file.exists()){
             file.mkdir();
@@ -110,36 +116,13 @@ public class ArticleController {
 
     @PostMapping("/saveArticle")
     @ResponseBody
-    public R saveArticle(String title,String describe,int money,String urlPath,HttpSession session) throws IOException {
+    public R saveArticle(Article article){
+        HttpSession session = ServletUtils.getRequest().getSession();
         User user= (User) session.getAttribute("userInfo");
         //保存数据接口，接收标题，描述，筹集金额，上传图片的地址;
-        Article article=new Article();
-        article.setTitle(title);
         article.setAuth(user.getName());
         article.setAuthId(user.getId());
-        article.setMoney(money);
-        article.setDescribe(describe);
-       /* File file=new File(urlPath);
-        File[] files=file.listFiles();
-        StringBuilder builder=new StringBuilder();
-        int index= urlPath.indexOf("/static");
-       if(files!=null){
-           String imgPath=urlPath.substring(index,urlPath.length());
-           //hadoop创建节点
-           //String hadoopDir="/gyImg/"+imgPath.substring(14);
-           //fsSource.mkdirs(new Path(hadoopDir));
-           for(int i=0;i<files.length;i++){
-               File f=files[i];
-               String copyPath="/"+imgPath+"/"+f.getName();
-             //  String hadoopPath=hadoopDir+"/"+f.getName();
-               builder.append(copyPath);
-               builder.append(",");
-               //复制文件到hadoop
-               System.out.println("copyPath:"+copyPath);
-               //System.out.println("hadoopDir:"+hadoopDir);
-               //fsSource.copyFromLocalFile(new Path(copyPath),new Path(hadoopDir));
-           }
-       }*/
+        String urlPath = article.getUrlPath();
         if(photoMaps.containsKey(urlPath)){
             StringBuilder builder=new StringBuilder();
             List<String> list=photoMaps.get(urlPath);
@@ -147,7 +130,7 @@ public class ArticleController {
                 String path=list.get(i);
                 System.out.println(path+"================Path");
                 int index= path.indexOf("/static");
-                String copyPath=path.substring(index,path.length());
+                String copyPath=path.substring(index);
                 builder.append(copyPath);
                 builder.append(",");
             }
@@ -156,7 +139,7 @@ public class ArticleController {
         }
 
         article.setCreatetime(new Date());
-        article.setStatus(-1);
+        article.setStatus(-1);//-1待审核
         articleMapper.insert(article);
         return R.success();
     }
@@ -175,25 +158,11 @@ public class ArticleController {
 
     @PostMapping("/getList")
     @ResponseBody
-    public R getList(@RequestParam Map map){
-        Field[] fields= Article.class.getDeclaredFields();
-        QueryWrapper queryWrapper=new QueryWrapper();
-        Page page=new Page();
-        page.setCurrent(Long.valueOf(map.get("curr").toString()));
-        page.setSize(Long.valueOf( map.get("limit").toString()));
-
-        for (int i = 0; i < fields.length; i++) {
-            Field field= fields[i];
-            String fieldName=field.getName();
-            if(map.containsKey(fieldName)){
-                queryWrapper.eq(fieldName,map.get(fieldName));
-            }
-        }
-        /*int authId=0;
-        if(map.containsKey("authId")){authId= Integer.valueOf((String) map.get("authId"));}*/
-        List<Article> list=articleMapper.getArticleListPage((page.getCurrent()-1)*page.getSize(),page.getSize(),"createtime", (String) map.get("status"));
-        page.setRecords(list);
-        page.setTotal(articleMapper.selectCount(queryWrapper));
+    public R getList(Article article,int curr,int limit){
+       IPage page=new Page();
+       page.setCurrent(curr);
+       page.setSize(limit);
+       page = articleMapper.getArticleListPage(page, article,null);
         return R.success().set("page",page);
     }
 
@@ -218,8 +187,11 @@ public class ArticleController {
     @PostMapping("/getHot")
     @ResponseBody
     public R getHot(){
-        List<Article> list=articleMapper.getArticleListPage(0,20,"replyNum",null);
-        return R.success().set("hotList",list);
+        IPage page=new Page();
+        page.setCurrent(1);
+        page.setSize(20);
+        IPage<Article> HOT = articleMapper.getArticleListPage(page, new Article(), "replyNum");
+        return R.success().set("page",HOT);
     }
 
     @PostMapping("/deleteArticle")
@@ -263,6 +235,7 @@ public class ArticleController {
     @PostMapping("/updateArticle")
     @ResponseBody
     public R updateArticle(@RequestParam Map map){
+        HttpSession session = ServletUtils.getSession();
         int id=Integer.valueOf(map.get("id").toString());
         Article article= articleMapper.selectById(id);
         if(article!=null&&map.get("status")!=null){
@@ -273,7 +246,15 @@ public class ArticleController {
            if(money>article.getMoney()-article.getMoneynow()){
                return R.success("捐献失败！捐献金额大于所需金额！"+(article.getMoney()-article.getMoneynow()));
            }
-           article.setMoneynow(article.getMoneynow()+money);//将当前金额进行更新;
+            User userInfo = (User) session.getAttribute("userInfo");
+            Artrecord artrecord=new Artrecord();
+            artrecord.setArticleid(article.getId());
+            artrecord.setCreatetime(new Date());
+            artrecord.setMoney(money);
+            artrecord.setName(userInfo.getName());
+            artrecord.setUserid(userInfo.getId());
+            artrecordMapper.insert(artrecord);
+            article.setMoneynow(article.getMoneynow()+money);//将当前金额进行更新;
             if(article.getMoneynow().equals(article.getMoney())){
                 article.setStatus(0);
             }

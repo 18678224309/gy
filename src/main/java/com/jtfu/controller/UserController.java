@@ -48,22 +48,22 @@ public class UserController {
     String imageServer;
     /*注册*/
     @RequestMapping("/register")
-    public boolean register(@RequestParam("username")String username,@RequestParam("password")String pwd,@RequestParam("phone")String phone){
-        System.out.println(username+"---"+pwd+"---"+phone);
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(pwd);
-        user.setPhone(phone);
-        user.setName(username);
+    public R register(User user){
+        QueryWrapper wrapper=new QueryWrapper();
+        wrapper.eq("username",user.getUsername());
+        User one = userService.getOne(wrapper);
+        if(one!=null){
+            return R.error("用户名已存在！");
+        }
         user.setAge(10);
-        user.setSex("1");
         user.setRoleid(0);
+        user.setStatus("online");
         user.setDelFlag(0);
         user.setCreatetime(new Date());
         user.setSign("在深邃的编码世界，做一枚轻盈的纸飞机");
         user.setAvatar("/ssm_Demo/static/image/default.jpg");
-        boolean res = userService.save(user);
-        return res;
+        userService.save(user);
+        return R.success();
     }
     /*登录*/
     @RequestMapping("/login")
@@ -128,8 +128,8 @@ public class UserController {
             user.setStatus("offline");
             session.removeAttribute("userInfo");
         }
-        //request.getRequestDispatcher("/index.html").forward(request, response);
-        response.sendRedirect("/index.html");
+        request.getRequestDispatcher("/index.html").forward(request, response);
+        //response.sendRedirect("/index.html");
     }
 
     //完善个人信息

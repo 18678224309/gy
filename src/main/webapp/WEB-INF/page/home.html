@@ -26,8 +26,8 @@
             <li class="layui-nav-item" style="float: right">
                 <#if (Session.userInfo)??>
                         <a class="fly-nav-avatar"  href="/center.html" target="_blank">
-                            <cite class="layui-hide-xs" style="padding-right: 20px"> ${Session.userInfo.name}</cite>
-                            <img src="${Session.userInfo.avatar}">
+                            <cite class="layui-hide-xs" style="padding-right: 20px"> ${Session.userInfo.name!}</cite>
+                            <img src="${Session.userInfo.avatar!}">
                             <dl class="layui-nav-child">
                                 <dd><a href="javascript:;" onclick="outLogin()">退出</a></dd>
                             </dl>
@@ -66,10 +66,13 @@
             </div>
 
             <div class="fly-panel" style="margin-bottom: 0;">
-                <div class="fly-panel-title fly-filter"><a href="javaScript:void(0)" class="layui-this" >综合</a>
-                   <!-- <span class="fly-mid"></span><a href="javaScript:void(0)" onclick="getArticleList(this,1)">未结</a>
-                    <span class="fly-mid"></span><a href="javaScript:void(0)" onclick="getArticleList(this,0)">已结</a>
-                    <span class="fly-mid"></span><a href="javaScript:void(0)">精华</a>-->
+                <div class="fly-panel-title fly-filter">
+                    <a href="javaScript:void(0)" class="layui-this" onclick="getArticleList(this,1)" >医疗</a>
+                    <span class="fly-mid"></span><a href="javaScript:void(0)" onclick="getArticleList(this,2)">教育</a>
+                    <span class="fly-mid"></span><a href="javaScript:void(0)" onclick="getArticleList(this,3)">文化</a>
+                    <span class="fly-mid"></span><a href="javaScript:void(0)" onclick="getArticleList(this,4)">科技</a>
+                    <span class="fly-mid"></span><a href="javaScript:void(0)" onclick="getArticleList(this,5)">环境生态</a>
+                    <span class="fly-mid"></span><a href="javaScript:void(0)" onclick="getArticleList(this,6)">救灾减灾</a>
                 </div>
                 <ul class="fly-list" id="table">
 
@@ -112,43 +115,18 @@
 
 </div>
 </body>
-<script src="/static/dist/layui.js"></script>
-<script src="/static/jquery/jquery.min.js"></script>
+<script src="/static/dist/layui.all.js"></script>
 <script>
-    var carousel,laypage,element;
-    layui.use(['carousel','laypage','element'], function(){
-         carousel = layui.carousel,laypage= layui.laypage,element = layui.element;
+    var $=layui.jquery;
+    var carousel=layui.carousel;
+    var laypage=layui.laypage;
+    var element=layui.element;
 
-        $.post("/article/getSlideShow",{},function(res){
-            let SlideShow=res.SlideShow;
-            for (let i=0;i<SlideShow.length;i++){
-                $("#carousel_item").append("<img src='"+SlideShow[i].photos+"' style='cursor:pointer;width: 100%;height: 300px;' onclick='goDetilPage("+SlideShow[i].id+")'>");
-            }
-            //常规轮播
-            carousel.render({
-                elem: '#FLY_topline'
-                ,arrow: 'hover'
-                ,width:'100%'
-            });
-        });
 
-        $.post('/article/getHot',{},function(res){
-                let hotList=res.hotList;
-                for(let i=0;i<=hotList.length;i++){
-                    let hot="<dd><a href=\"javaScript:void(0)\" onclick=\"goDetilPage("+hotList[i].id+")\">"+hotList[i].title+"</a> <span><i class=\"iconfont icon-pinglun1\">"+hotList[i].replyNum+"</i></span></dd>";
-                    $("#hot").append(hot);
-                }
-        });
-
-        getArticleList(null,-1);
-        $.post('/user/getHotUser',{},function(res){
-            let userHot=res.userHot;
-            for(let i=0;i<=userHot.length;i++){
-                let hot="<dd><a href='javaScript:void(0)' ><img src='"+userHot[i].avatar+"'><cite>"+userHot[i].name+"</cite><i>"+userHot[i].replyNum+"次回复</i></a></dd>";
-                $("#userHot").append(hot);
-            }
-        });
+    $(function () {
+        dataInit();
     });
+    
 
     //转到详细页面
     function goDetilPage(articleId){
@@ -161,11 +139,11 @@
 
     }
     //请求列表数据
-    function getList(item){
+    function getList(curr,limit,item){
         let returnVal;
         $.ajax({
-            url:'/article/getList',async:false,type:"POST",data:item,success:function(res){
-                returnVal=res;
+            url:'/article/getList?curr='+curr+"&limit="+limit,async:false,type:"POST",data:item,success:function(res){
+                returnVal=res.page.records;
             }
         });
         return returnVal;
@@ -174,11 +152,7 @@
     function getArticleList(item,status){
         $("[class=layui-this]").removeClass("layui-this");
         $(item).addClass("layui-this");
-        let option={curr:1,limit:50};
-        if(status!=-1){
-            option={curr:1,limit:50,status:status};
-        }
-        $.post('/article/getList',option,function(res){
+        $.post('/article/getList?curr=1&limit=50',{typeid:status},function(res){
             drawTable("#table",res.page.records);
             laypage.render({
                 elem: 'laypage' //注意，这里的 test1 是 ID，不用加 # 号
@@ -186,7 +160,7 @@
                 ,limit:50
                 ,jump:function (obj,first) {
                     if(!first){
-                        let res= getList({curr:obj.curr,limit:obj.limit})
+                        let res= getList(obj.curr,obj.limit,{typeid:status})
                         drawTable("#table",res.page.records);
                     }
                 }
@@ -213,6 +187,38 @@
                 "                    </li>";
             $(tableId).append(li);
         }
+    }
+
+
+    function dataInit(){
+        $.post("/article/getSlideShow",{},function(res){
+            let SlideShow=res.SlideShow;
+            for (let i=0;i<SlideShow.length;i++){
+                $("#carousel_item").append("<img src='"+SlideShow[i].photos+"' style='cursor:pointer;width: 100%;height: 300px;' onclick='goDetilPage("+SlideShow[i].id+")'>");
+            }
+            //常规轮播
+            carousel.render({
+                elem: '#FLY_topline'
+                ,arrow: 'hover'
+                ,width:'100%'
+            });
+        });
+        $.post('/article/getHot',{},function(res){
+            var page = res.page;
+            var records = page.records;
+            for(let i=0;i<=records.length;i++){
+                let hot="<dd><a href=\"javaScript:void(0)\" onclick=\"goDetilPage("+records[i].id+")\">"+records[i].title+"</a> <span><i class=\"iconfont icon-pinglun1\">"+records[i].replyNum+"</i></span></dd>";
+                $("#hot").append(hot);
+            }
+        });
+        $.post('/user/getHotUser',{},function(res){
+            let userHot=res.userHot;
+            for(let i=0;i<=userHot.length;i++){
+                let hot="<dd><a href='javaScript:void(0)' ><img src='"+userHot[i].avatar+"'><cite>"+userHot[i].name+"</cite><i>"+userHot[i].replyNum+"次回复</i></a></dd>";
+                $("#userHot").append(hot);
+            }
+        });
+        getArticleList(null,1);
     }
 </script>
 </html>

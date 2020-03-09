@@ -48,8 +48,39 @@ public class User implements Serializable {
 
     private Integer roleid;
 
+    private String email;
+
+    private  String identity;
+
+    private String addr;
+
     @TableField(exist = false)
     private Integer replyNum;
+
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
+    }
+
+    public String getAddr() {
+        return addr;
+    }
+
+    public void setAddr(String addr) {
+        this.addr = addr;
+    }
 
     public Integer getReplyNum() {
         return replyNum;
